@@ -1,0 +1,70 @@
+<!-- APRENDIZAJE PAGE -->
+<div class="page aprendizaje-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-green">🌟</div>
+    <div>
+      <h1 class="page-title">Espacio de Aprendizaje</h1>
+      <p class="page-subtitle">Reglas, trucos y desafíos ortográficos</p>
+    </div>
+  </div>
+
+  <!-- Description card -->
+  <div class="info-clay-card clay-card card-green fade-in-section">
+    <div class="info-card-icon">🎯</div>
+    <p>
+      Los Juegos Ortográficos son una forma divertida y dinámica de aprender a escribir correctamente. 
+      A través del juego, los estudiantes fortalecen el uso de las reglas ortográficas, desarrollan la 
+      atención y aprenden de sus errores de manera significativa.
+    </p>
+    <p>
+      Esta sección busca que la ortografía se convierta en una experiencia entretenida, donde aprender 
+      jugando motive a los niños a mejorar su escritura y disfrutar del aprendizaje.
+    </p>
+  </div>
+
+  <!-- Weekly Challenge featured card -->
+  <% if (challenge) { %>
+  <div class="challenge-card clay-card fade-in-section">
+    <div class="challenge-sparkles" aria-hidden="true">
+      <span>✨</span><span>⭐</span><span>✨</span><span>⭐</span><span>✨</span>
+    </div>
+    <div class="challenge-inner">
+      <div class="challenge-badge">⚡ Desafío Ortográfico de la Semana</div>
+      <p class="challenge-text"><%= challenge.text %></p>
+      <% if (challenge.hint) { %>
+        <div class="challenge-hint">💡 Pista: <%= challenge.hint %></div>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Filter pills -->
+  <div class="filter-pills fade-in-section">
+    <% ['Todos','Reglas','Trucos','Actividades','Desafíos'].forEach(cat => { %>
+      <a href="/aprendizaje?category=<%= cat %>" 
+         class="filter-pill <%= activeCategory === cat ? 'active' : '' %> pill-green">
+        <%= cat %>
+      </a>
+    <% }); %>
+  </div>
+
+  <!-- Learning posts grid -->
+  <% if (posts.length === 0) { %>
+    <div class="empty-state clay-card fade-in-section">
+      <div class="empty-icon">🌟</div>
+      <h3>Pronto habrá contenido aquí</h3>
+      <p>El espacio de aprendizaje se irá llenando con reglas, trucos y actividades.</p>
+    </div>
+  <% } else { %>
+    <div class="learning-grid fade-in-section">
+      <% posts.forEach((post, i) => { %>
+        <div class="learning-card clay-card fade-in-card" style="animation-delay: <%= i * 0.1 %>s">
+          <div class="learning-emoji"><%= post.emoji %></div>
+          <span class="category-tag tag-green"><%= post.category %></span>
+          <h3 class="learning-title"><%= post.title %></h3>
+          <p class="learning-content"><%= post.content %></p>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

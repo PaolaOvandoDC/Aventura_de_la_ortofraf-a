@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> | Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="admin-body">
+  <div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <nav class="admin-sidebar">
+      <div class="admin-logo">
+        <span>🦉</span>
+        <span>Admin Panel</span>
+      </div>
+      <ul class="admin-nav">
+        <li><a href="/admin" class="admin-nav-item <%= section === 'overview' ? 'active' : '' %>">📊 Resumen</a></li>
+        <li><a href="/admin/fotos" class="admin-nav-item <%= section === 'fotos' ? 'active' : '' %>">📸 Fotos</a></li>
+        <li><a href="/admin/juegos" class="admin-nav-item <%= section === 'juegos' ? 'active' : '' %>">🎮 Juegos</a></li>
+        <li><a href="/admin/aprendemos" class="admin-nav-item <%= section === 'aprendemos' ? 'active' : '' %>">📚 Aprendemos</a></li>
+        <li><a href="/admin/tareas" class="admin-nav-item <%= section === 'tareas' ? 'active' : '' %>">🗒️ Tareas</a></li>
+        <li><a href="/admin/escritor" class="admin-nav-item <%= section === 'escritor' ? 'active' : '' %>">✍️ Escritor</a></li>
+        <li><a href="/admin/aprendizaje" class="admin-nav-item <%= section === 'aprendizaje' ? 'active' : '' %>">🌟 Aprendizaje</a></li>
+      </ul>
+      <div class="admin-sidebar-footer">
+        <a href="/" class="admin-nav-item">🏠 Ver sitio</a>
+        <a href="/admin/logout" class="admin-nav-item logout-btn">🚪 Salir</a>
+      </div>
+    </nav>
+
+    <!-- Admin Main -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-page-title"><%= title %></h1>
+        <% if (typeof msg !== 'undefined' && msg) { %>
+          <div class="admin-msg admin-msg-success">✅ Operación exitosa</div>
+        <% } %>
+      </div>
+
+      <!-- ── OVERVIEW ────────────────────────────────────────── -->
+      <% if (section === 'overview') { %>
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">📸</div>
+            <div class="admin-stat-num"><%= stats.photos %></div>
+            <div class="admin-stat-label">Fotos</div>
+            <a href="/admin/fotos" class="btn btn-sm">Gestionar</a>
+          </div>
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">🎮</div>
+            <div class="admin-stat-num"><%= stats.games %></div>
+            <div class="admin-stat-label">Juegos</div>
+            <a href="/admin/juegos" class="btn btn-sm">Gestionar</a>
+          </div>
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">📚</div>
+            <div class="admin-stat-num"><%= stats.lessons %></div>
+            <div class="admin-stat-label">Lecciones</div>
+            <a href="/admin/aprendemos" class="btn btn-sm">Gestionar</a>
+          </div>
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">🗒️</div>
+            <div class="admin-stat-num"><%= stats.tasks %></div>
+            <div class="admin-stat-label">Tareas</div>
+            <a href="/admin/tareas" class="btn btn-sm">Gestionar</a>
+          </div>
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">✍️</div>
+            <div class="admin-stat-num"><%= stats.works %></div>
+            <div class="admin-stat-label">Producciones</div>
+            <a href="/admin/escritor" class="btn btn-sm">Gestionar</a>
+          </div>
+          <div class="admin-stat-card clay-card">
+            <div class="admin-stat-icon">🌟</div>
+            <div class="admin-stat-num"><%= stats.learnings %></div>
+            <div class="admin-stat-label">Aprendizajes</div>
+            <a href="/admin/aprendizaje" class="btn btn-sm">Gestionar</a>
+          </div>
+        </div>
+
+        <!-- Weekly Challenge Edit -->
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">⚡ Desafío Ortográfico Semanal</h2>
+          <% if (challenge) { %>
+            <div class="current-challenge">
+              <strong>Actual:</strong> <%= challenge.text %>
+              <% if (challenge.hint) { %><br/><em>Pista: <%= challenge.hint %></em><% } %>
+            </div>
+          <% } %>
+          <form action="/admin/challenge" method="POST" class="admin-form">
+            <div class="form-group">
+              <label>Texto del desafío *</label>
+              <textarea name="text" class="form-input" rows="3" required 
+                placeholder="Ej: Escribe 5 palabras con la letra H mayúscula..."><%= challenge ? challenge.text : '' %></textarea>
+            </div>
+            <div class="form-group">
+              <label>Pista (opcional)</label>
+              <input type="text" name="hint" class="form-input" 
+                placeholder="Pista opcional..."
+                value="<%= challenge ? challenge.hint : '' %>" />
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Guardar Desafío</button>
+          </form>
+        </div>
+
+      <!-- ── FOTOS ──────────────────────────────────────────── -->
+      <% } else if (section === 'fotos') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Foto</h2>
+          <form action="/admin/fotos" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Ej: Día del libro" />
+              </div>
+              <div class="form-group">
+                <label>Categoría</label>
+                <select name="category" class="form-input">
+                  <option>Actividades</option>
+                  <option>Eventos</option>
+                  <option>Otros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>URL de la imagen *</label>
+              <input type="url" name="imageUrl" class="form-input" required placeholder="https://..." />
+            </div>
+            <div class="form-group">
+              <label>Fecha</label>
+              <input type="date" name="date" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label>Descripción</label>
+              <input type="text" name="description" class="form-input" placeholder="Descripción breve..." />
+            </div>
+            <button type="submit" class="btn btn-primary">📸 Agregar Foto</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Fotos existentes (<%= photos.length %>)</h2>
+          <% if (photos.length === 0) { %>
+            <p class="admin-empty">No hay fotos aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% photos.forEach(p => { %>
+                <div class="admin-item">
+                  <img src="<%= p.imageUrl %>" alt="<%= p.title %>" class="admin-thumb" />
+                  <div class="admin-item-info">
+                    <strong><%= p.title %></strong>
+                    <span class="tag"><%= p.category %></span>
+                  </div>
+                  <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar esta foto?')">🗑️</button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+
+      <!-- ── JUEGOS ─────────────────────────────────────────── -->
+      <% } else if (section === 'juegos') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Juego</h2>
+          <form action="/admin/juegos" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre del juego *</label>
+                <input type="text" name="name" class="form-input" required placeholder="Ej: Gimkit Ortografía" />
+              </div>
+              <div class="form-group">
+                <label>Emoji</label>
+                <input type="text" name="imageEmoji" class="form-input" value="🎮" maxlength="4" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Descripción *</label>
+              <textarea name="description" class="form-input" rows="2" required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Dificultad (1-5)</label>
+                <input type="number" name="difficulty" class="form-input" min="1" max="5" value="3" />
+              </div>
+              <div class="form-group">
+                <label>Tipo</label>
+                <select name="type" class="form-input">
+                  <option value="external">Enlace externo</option>
+                  <option value="builtin-error">Integrado - Encuentra el error</option>
+                  <option value="builtin-complete">Integrado - Completa la palabra</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>URL externa (si aplica)</label>
+              <input type="url" name="externalUrl" class="form-input" placeholder="https://..." />
+            </div>
+            <button type="submit" class="btn btn-primary">🎮 Agregar Juego</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Juegos existentes (<%= games.length %>)</h2>
+          <% if (games.length === 0) { %>
+            <p class="admin-empty">No hay juegos aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% games.forEach(g => { %>
+                <div class="admin-item">
+                  <span class="admin-emoji"><%= g.imageEmoji %></span>
+                  <div class="admin-item-info">
+                    <strong><%= g.name %></strong>
+                    <span class="tag"><%= g.type %></span>
+                  </div>
+                  <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar este juego?')">🗑️</button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+
+      <!-- ── APRENDEMOS ─────────────────────────────────────── -->
+      <% } else if (section === 'aprendemos') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Publicación</h2>
+          <form action="/admin/aprendemos" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Tema *</label>
+                <input type="text" name="topic" class="form-input" required placeholder="Ej: Las tildes" />
+              </div>
+              <div class="form-group">
+                <label>Categoría</label>
+                <select name="category" class="form-input">
+                  <option>Lectura</option>
+                  <option>Escritura</option>
+                  <option>Ortografía</option>
+                  <option>Expresión</option>
+                  <option>Otros</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Descripción *</label>
+              <textarea name="description" class="form-input" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fecha</label>
+                <input type="date" name="date" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label>URL de imagen (opcional)</label>
+                <input type="url" name="imageUrl" class="form-input" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-group form-check">
+              <input type="checkbox" id="isNewPost" name="isNewPost" class="form-checkbox" />
+              <label for="isNewPost">🆕 Marcar como "Lo nuevo esta semana"</label>
+            </div>
+            <button type="submit" class="btn btn-primary">📚 Agregar Publicación</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Publicaciones (<%= lessons.length %>)</h2>
+          <% if (lessons.length === 0) { %>
+            <p class="admin-empty">No hay publicaciones aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% lessons.forEach(l => { %>
+                <div class="admin-item">
+                  <span class="admin-emoji">📚</span>
+                  <div class="admin-item-info">
+                    <strong><%= l.topic %></strong>
+                    <span class="tag"><%= l.category %></span>
+                    <% if (l.isNewPost) { %><span class="tag tag-new">🆕 Nuevo</span><% } %>
+                  </div>
+                  <form action="/admin/aprendemos/<%= l._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+
+      <!-- ── TAREAS ─────────────────────────────────────────── -->
+      <% } else if (section === 'tareas') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Tarea</h2>
+          <form action="/admin/tareas" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Ej: Ejercicio de tildes" />
+              </div>
+              <div class="form-group">
+                <label>Materia</label>
+                <input type="text" name="subject" class="form-input" value="Español" placeholder="Ej: Español" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Descripción *</label>
+              <textarea name="description" class="form-input" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fecha de entrega *</label>
+                <input type="date" name="dueDate" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label>Estado</label>
+                <select name="status" class="form-input">
+                  <option value="Pendiente">🟡 Pendiente</option>
+                  <option value="En proceso">🔵 En proceso</option>
+                  <option value="Completada">✅ Completada</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">🗒️ Agregar Tarea</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Tareas (<%= tasks.length %>)</h2>
+          <% if (tasks.length === 0) { %>
+            <p class="admin-empty">No hay tareas aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% tasks.forEach(t => { %>
+                <div class="admin-item">
+                  <span class="admin-emoji">🗒️</span>
+                  <div class="admin-item-info">
+                    <strong><%= t.title %></strong>
+                    <span class="tag"><%= t.subject %></span>
+                    <span class="tag"><%= t.status %></span>
+                    <small>Vence: <%= new Date(t.dueDate).toLocaleDateString('es-MX') %></small>
+                  </div>
+                  <div class="admin-item-actions">
+                    <form action="/admin/tareas/<%= t._id %>?_method=PUT" method="POST" style="display:inline-flex;gap:4px">
+                      <select name="status" class="form-input form-input-sm">
+                        <option value="Pendiente" <%= t.status === 'Pendiente' ? 'selected' : '' %>>🟡 Pendiente</option>
+                        <option value="En proceso" <%= t.status === 'En proceso' ? 'selected' : '' %>>🔵 En proceso</option>
+                        <option value="Completada" <%= t.status === 'Completada' ? 'selected' : '' %>>✅ Completada</option>
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-success">✓</button>
+                    </form>
+                    <form action="/admin/tareas/<%= t._id %>?_method=DELETE" method="POST">
+                      <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
+                    </form>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+
+      <!-- ── ESCRITOR ───────────────────────────────────────── -->
+      <% } else if (section === 'escritor') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Producción</h2>
+          <form action="/admin/escritor" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre del estudiante (solo primer nombre) *</label>
+                <input type="text" name="studentName" class="form-input" required placeholder="Ej: Sofía" />
+              </div>
+              <div class="form-group">
+                <label>Título de la producción *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Ej: El gato mágico" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Texto *</label>
+              <textarea name="content" class="form-input" rows="6" required placeholder="Escribe aquí el contenido de la producción..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>URL de ilustración (opcional)</label>
+              <input type="url" name="imageUrl" class="form-input" placeholder="https://..." />
+            </div>
+            <button type="submit" class="btn btn-primary">✍️ Publicar Producción</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Producciones (<%= works.length %>)</h2>
+          <% if (works.length === 0) { %>
+            <p class="admin-empty">No hay producciones aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% works.forEach(w => { %>
+                <div class="admin-item">
+                  <span class="admin-emoji">✍️</span>
+                  <div class="admin-item-info">
+                    <strong><%= w.title %></strong>
+                    <span class="tag"><%= w.studentName %></span>
+                    <small><%= w.likes %> ⭐</small>
+                  </div>
+                  <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+
+      <!-- ── APRENDIZAJE ─────────────────────────────────────── -->
+      <% } else if (section === 'aprendizaje') { %>
+        <div class="admin-form-card clay-card">
+          <h2 class="admin-form-title">➕ Agregar Recurso de Aprendizaje</h2>
+          <form action="/admin/aprendizaje" method="POST" class="admin-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Título *</label>
+                <input type="text" name="title" class="form-input" required placeholder="Ej: Regla del uso de B y V" />
+              </div>
+              <div class="form-group">
+                <label>Categoría</label>
+                <select name="category" class="form-input">
+                  <option>Reglas</option>
+                  <option>Trucos</option>
+                  <option>Actividades</option>
+                  <option>Desafíos</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Emoji</label>
+                <input type="text" name="emoji" class="form-input" value="📖" maxlength="4" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Contenido *</label>
+              <textarea name="content" class="form-input" rows="4" required placeholder="Explica la regla, truco o actividad..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">🌟 Agregar Recurso</button>
+          </form>
+        </div>
+
+        <div class="admin-table-card clay-card">
+          <h2 class="admin-form-title">Recursos (<%= learnings.length %>)</h2>
+          <% if (learnings.length === 0) { %>
+            <p class="admin-empty">No hay recursos aún.</p>
+          <% } else { %>
+            <div class="admin-cards-list">
+              <% learnings.forEach(l => { %>
+                <div class="admin-item">
+                  <span class="admin-emoji"><%= l.emoji %></span>
+                  <div class="admin-item-info">
+                    <strong><%= l.title %></strong>
+                    <span class="tag"><%= l.category %></span>
+                  </div>
+                  <form action="/admin/aprendizaje/<%= l._id %>?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
+                  </form>
+                </div>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </main>
+  </div>
+</body>
+</html>

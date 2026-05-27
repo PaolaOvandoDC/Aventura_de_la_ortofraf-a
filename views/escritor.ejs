@@ -1,0 +1,64 @@
+<!-- ESCRITOR PAGE -->
+<div class="page escritor-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-lavender">✍️</div>
+    <div>
+      <h1 class="page-title">El Rincón del Escritor</h1>
+      <p class="page-subtitle">Producciones escritas de nuestros estudiantes</p>
+    </div>
+  </div>
+
+  <!-- Description card -->
+  <div class="info-clay-card clay-card card-lavender fade-in-section">
+    <div class="info-card-icon">📖</div>
+    <p>
+      Este espacio está dedicado a las producciones escritas creadas por los niños y niñas de quinto de primaria. 
+      Aquí compartimos cuentos, textos, descripciones y otras creaciones, donde cada estudiante expresa sus ideas, 
+      imaginación y aprendizajes, aplicando progresivamente las normas ortográficas.
+    </p>
+    <p>
+      El Rincón del Escritor valora el esfuerzo, la creatividad y el proceso de escritura, promoviendo la 
+      confianza para escribir, revisar y mejorar cada texto.
+    </p>
+  </div>
+
+  <!-- Works grid -->
+  <% if (works.length === 0) { %>
+    <div class="empty-state clay-card fade-in-section">
+      <div class="empty-icon">✍️</div>
+      <h3>Aún no hay producciones</h3>
+      <p>Pronto aparecerán los escritos de nuestros talentosos estudiantes.</p>
+    </div>
+  <% } else { %>
+    <div class="works-grid fade-in-section">
+      <% works.forEach((work, i) => { %>
+        <div class="work-card fade-in-card" style="animation-delay: <%= i * 0.1 %>s">
+          <div class="notebook-card">
+            <div class="notebook-lines" aria-hidden="true">
+              <% for(let l=0;l<4;l++) { %>
+                <div class="notebook-line"></div>
+              <% } %>
+            </div>
+            <div class="notebook-hole hole-top"></div>
+            <div class="notebook-hole hole-bottom"></div>
+            <div class="notebook-content">
+              <div class="work-author-badge">✍️ <%= work.studentName %></div>
+              <h3 class="work-title"><%= work.title %></h3>
+              <% if (work.imageUrl) { %>
+                <img src="<%= work.imageUrl %>" alt="Ilustración de <%= work.title %>" class="work-illustration" loading="lazy" />
+              <% } %>
+              <div class="work-text"><%= work.content %></div>
+              <button 
+                class="like-btn star-like" 
+                id="like-work-<%= work._id %>"
+                onclick="toggleLike('work', '<%= work._id %>', this)"
+                aria-label="Me gustó este texto">
+                ⭐ <span class="like-count"><%= work.likes %></span> Me gustó
+              </button>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

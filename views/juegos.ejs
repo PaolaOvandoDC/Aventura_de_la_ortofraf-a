@@ -1,0 +1,86 @@
+<!-- GAMES PAGE -->
+<div class="page juegos-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-mint">🎮</div>
+    <div>
+      <h1 class="page-title">Juegos Educativos</h1>
+      <p class="page-subtitle">Aprende ortografía jugando y divirtiéndote</p>
+    </div>
+  </div>
+
+  <!-- Built-in mini-games -->
+  <section class="minigames-section fade-in-section">
+    <h2 class="section-title-sm">🕹️ Mini-juegos integrados</h2>
+    <div class="games-grid">
+      <!-- Find the error game -->
+      <div class="game-card clay-card card-mint bounce-hover">
+        <div class="game-emoji">🔍</div>
+        <h3 class="game-name">Encuentra el Error</h3>
+        <p class="game-desc">Lee la oración y haz clic en la palabra con el error ortográfico</p>
+        <div class="difficulty-stars">
+          <span>⭐⭐⭐</span>
+          <span class="diff-label">Dificultad</span>
+        </div>
+        <button class="btn btn-mint" onclick="openGame('errorGame')" id="btnErrorGame">¡Jugar ahora!</button>
+      </div>
+
+      <!-- Complete the word game -->
+      <div class="game-card clay-card card-coral bounce-hover">
+        <div class="game-emoji">✏️</div>
+        <h3 class="game-name">Completa la Palabra</h3>
+        <p class="game-desc">Escribe la letra o acento que falta para completar la palabra correctamente</p>
+        <div class="difficulty-stars">
+          <span>⭐⭐</span>
+          <span class="diff-label">Dificultad</span>
+        </div>
+        <button class="btn btn-coral" onclick="openGame('completeGame')" id="btnCompleteGame">¡Jugar ahora!</button>
+      </div>
+
+      <% games.forEach(game => { %>
+        <div class="game-card clay-card bounce-hover" style="border-top: 4px solid var(--mint)">
+          <div class="game-emoji"><%= game.imageEmoji %></div>
+          <h3 class="game-name"><%= game.name %></h3>
+          <p class="game-desc"><%= game.description %></p>
+          <div class="difficulty-stars">
+            <% for(let i=0;i<game.difficulty;i++) { %><span>⭐</span><% } %>
+            <span class="diff-label">Dificultad</span>
+          </div>
+          <% if (game.externalUrl) { %>
+            <a href="<%= game.externalUrl %>" target="_blank" rel="noopener" class="btn btn-mint">¡Jugar ahora!</a>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</div>
+
+<!-- GAME MODAL: Find the error -->
+<div class="game-modal" id="errorGame" role="dialog" aria-modal="true" aria-labelledby="errorGameTitle">
+  <div class="game-modal-content clay-card">
+    <button class="modal-close" onclick="closeGame('errorGame')" aria-label="Cerrar">✕</button>
+    <h2 id="errorGameTitle">🔍 Encuentra el Error</h2>
+    <p class="game-instruction">Haz clic en la palabra que tiene un error ortográfico:</p>
+    <div class="error-game-sentence" id="errorSentence"></div>
+    <div class="game-feedback" id="errorFeedback"></div>
+    <div class="game-score">Puntos: <span id="errorScore">0</span></div>
+    <button class="btn btn-mint" id="nextErrorBtn" onclick="nextErrorQuestion()" style="display:none">Siguiente ➡️</button>
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+  </div>
+</div>
+
+<!-- GAME MODAL: Complete the word -->
+<div class="game-modal" id="completeGame" role="dialog" aria-modal="true" aria-labelledby="completeGameTitle">
+  <div class="game-modal-content clay-card">
+    <button class="modal-close" onclick="closeGame('completeGame')" aria-label="Cerrar">✕</button>
+    <h2 id="completeGameTitle">✏️ Completa la Palabra</h2>
+    <p class="game-instruction">Escribe la letra o acento que falta:</p>
+    <div class="complete-word-display" id="completeWordDisplay"></div>
+    <div class="complete-input-wrap">
+      <input type="text" id="completeInput" class="complete-input" maxlength="3" placeholder="?" autocomplete="off" />
+      <button class="btn btn-coral" onclick="checkComplete()">✓ Verificar</button>
+    </div>
+    <div class="game-feedback" id="completeFeedback"></div>
+    <div class="game-score">Puntos: <span id="completeScore">0</span></div>
+    <button class="btn btn-coral" id="nextCompleteBtn" onclick="nextCompleteQuestion()" style="display:none">Siguiente ➡️</button>
+  </div>
+</div>

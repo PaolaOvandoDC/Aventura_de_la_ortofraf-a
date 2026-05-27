@@ -1,0 +1,58 @@
+<!-- TAREAS PAGE -->
+<div class="page tareas-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-yellow">🗒️</div>
+    <div>
+      <h1 class="page-title">Rincón de Tareas</h1>
+      <p class="page-subtitle">Organiza tus tareas y no te pierdas de nada</p>
+    </div>
+  </div>
+
+  <!-- Status legend -->
+  <div class="status-legend fade-in-section">
+    <span class="status-badge status-pending">🟡 Pendiente</span>
+    <span class="status-badge status-progress">🔵 En proceso</span>
+    <span class="status-badge status-done">✅ Completada</span>
+  </div>
+
+  <% if (tasks.length === 0) { %>
+    <div class="empty-state clay-card fade-in-section">
+      <div class="empty-icon">🗒️</div>
+      <h3>No hay tareas registradas</h3>
+      <p>Cuando el profesor agregue tareas, aparecerán aquí.</p>
+    </div>
+  <% } else { %>
+    <div class="tasks-grid fade-in-section">
+      <% tasks.forEach((task, i) => { %>
+        <div class="task-card clay-card fade-in-card" style="animation-delay: <%= i * 0.1 %>s">
+          <div class="task-top">
+            <span class="subject-tag"><%= task.subject %></span>
+            <span class="status-badge
+              <%= task.status === 'Pendiente' ? 'status-pending' : 
+                  task.status === 'En proceso' ? 'status-progress' : 'status-done' %>">
+              <%= task.status === 'Pendiente' ? '🟡' : task.status === 'En proceso' ? '🔵' : '✅' %>
+              <%= task.status %>
+            </span>
+          </div>
+          <h3 class="task-title"><%= task.title %></h3>
+          <p class="task-desc"><%= task.description %></p>
+          <div class="task-footer">
+            <div class="task-due">
+              📅 <%= new Date(task.dueDate).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %>
+            </div>
+            <div class="task-countdown 
+              <%= task.daysLeft < 0 ? 'overdue' : task.daysLeft <= 3 ? 'urgent' : '' %>">
+              <% if (task.daysLeft < 0) { %>
+                ⚠️ Venció hace <%= Math.abs(task.daysLeft) %> día<%= Math.abs(task.daysLeft) !== 1 ? 's' : '' %>
+              <% } else if (task.daysLeft === 0) { %>
+                🔥 ¡Vence hoy!
+              <% } else { %>
+                ⏳ <%= task.daysLeft %> día<%= task.daysLeft !== 1 ? 's' : '' %> restante<%= task.daysLeft !== 1 ? 's' : '' %>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

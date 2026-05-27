@@ -1,0 +1,64 @@
+<!-- APRENDEMOS PAGE -->
+<div class="page aprendemos-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-sky">📚</div>
+    <div>
+      <h1 class="page-title">Lo que Aprendemos Juntos</h1>
+      <p class="page-subtitle">Temas y lecciones que desarrollamos en clase</p>
+    </div>
+  </div>
+
+  <!-- New this week highlight -->
+  <% if (newPost) { %>
+  <div class="highlight-box clay-card card-sky fade-in-section">
+    <div class="highlight-badge">🆕 Lo nuevo esta semana</div>
+    <h3 class="highlight-topic"><%= newPost.topic %></h3>
+    <p class="highlight-desc"><%= newPost.description %></p>
+    <span class="category-tag tag-sky"><%= newPost.category %></span>
+  </div>
+  <% } %>
+
+  <!-- Filter pills -->
+  <div class="filter-pills fade-in-section">
+    <% ['Todos','Lectura','Escritura','Ortografía','Expresión','Otros'].forEach(cat => { %>
+      <a href="/aprendemos?category=<%= cat %>" 
+         class="filter-pill <%= activeCategory === cat ? 'active' : '' %> pill-sky">
+        <%= cat %>
+      </a>
+    <% }); %>
+  </div>
+
+  <!-- Posts grid -->
+  <% if (posts.length === 0) { %>
+    <div class="empty-state clay-card fade-in-section">
+      <div class="empty-icon">📚</div>
+      <h3>Aún no hay publicaciones</h3>
+      <p>Pronto compartiremos lo que aprendemos en clase.</p>
+    </div>
+  <% } else { %>
+    <div class="posts-grid fade-in-section">
+      <% posts.forEach((post, i) => { %>
+        <div class="lesson-card clay-card fade-in-card" style="animation-delay: <%= i * 0.1 %>s">
+          <% if (post.imageUrl) { %>
+            <div class="lesson-img-wrap">
+              <img src="<%= post.imageUrl %>" alt="<%= post.topic %>" loading="lazy" />
+            </div>
+          <% } %>
+          <div class="lesson-body">
+            <span class="category-tag tag-sky"><%= post.category %></span>
+            <h3 class="lesson-topic"><%= post.topic %></h3>
+            <p class="lesson-date"><%= new Date(post.date).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %></p>
+            <p class="lesson-desc"><%= post.description %></p>
+            <button 
+              class="like-btn" 
+              id="like-lesson-<%= post._id %>"
+              onclick="toggleLike('lesson', '<%= post._id %>', this)"
+              aria-label="Me gustó">
+              ❤️ <span class="like-count"><%= post.likes %></span> Me gustó
+            </button>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

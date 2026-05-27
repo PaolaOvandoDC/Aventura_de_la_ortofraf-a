@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <meta name="description" content="La Aventura de la Ortografía - Producciones de Quinto de Primaria de la Escuela RUFFO. Cuentos, juegos, actividades y producciones escritas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>" />
+</head>
+<body>
+  <!-- Floating background decorations -->
+  <div class="bg-decorations" aria-hidden="true">
+    <span class="float-letter" style="left:5%;animation-delay:0s">A</span>
+    <span class="float-letter" style="left:15%;animation-delay:1.5s">B</span>
+    <span class="float-letter" style="left:28%;animation-delay:3s">C</span>
+    <span class="float-letter" style="left:42%;animation-delay:0.8s">D</span>
+    <span class="float-letter" style="left:58%;animation-delay:2.2s">E</span>
+    <span class="float-letter" style="left:72%;animation-delay:4s">F</span>
+    <span class="float-letter" style="left:85%;animation-delay:1s">G</span>
+    <span class="float-star" style="left:10%;animation-delay:0.5s">⭐</span>
+    <span class="float-star" style="left:35%;animation-delay:2s">✨</span>
+    <span class="float-star" style="left:60%;animation-delay:3.5s">⭐</span>
+    <span class="float-star" style="left:82%;animation-delay:1.2s">✨</span>
+  </div>
+
+  <!-- Cursor trail canvas -->
+  <canvas id="cursorTrail" class="cursor-trail"></canvas>
+
+  <div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-owl">🦉</span>
+        <div class="logo-text">
+          <span class="logo-title">La Aventura</span>
+          <span class="logo-sub">de la Ortografía</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/" class="nav-item <%= currentPath === '/' ? 'active' : '' %>">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Inicio</span>
+          </a>
+        </li>
+        <li>
+          <a href="/galeria" class="nav-item <%= currentPath.startsWith('/galeria') ? 'active' : '' %>">
+            <span class="nav-icon">📸</span>
+            <span class="nav-label">Galería</span>
+          </a>
+        </li>
+        <li>
+          <a href="/juegos" class="nav-item <%= currentPath.startsWith('/juegos') ? 'active' : '' %>">
+            <span class="nav-icon">🎮</span>
+            <span class="nav-label">Juegos</span>
+          </a>
+        </li>
+        <li>
+          <a href="/aprendemos" class="nav-item <%= currentPath.startsWith('/aprendemos') ? 'active' : '' %>">
+            <span class="nav-icon">📚</span>
+            <span class="nav-label">Aprendemos</span>
+          </a>
+        </li>
+        <li>
+          <a href="/tareas" class="nav-item <%= currentPath.startsWith('/tareas') ? 'active' : '' %>">
+            <span class="nav-icon">🗒️</span>
+            <span class="nav-label">Tareas</span>
+          </a>
+        </li>
+        <li>
+          <a href="/escritor" class="nav-item <%= currentPath.startsWith('/escritor') ? 'active' : '' %>">
+            <span class="nav-icon">✍️</span>
+            <span class="nav-label">Escritor</span>
+          </a>
+        </li>
+        <li>
+          <a href="/aprendizaje" class="nav-item <%= currentPath.startsWith('/aprendizaje') ? 'active' : '' %>">
+            <span class="nav-icon">🌟</span>
+            <span class="nav-label">Aprendizaje</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <% if (isAdmin) { %>
+          <a href="/admin" class="btn-admin">⚙️ Admin</a>
+        <% } else { %>
+          <a href="/admin/login" class="sidebar-admin-link">🔐 Admin</a>
+        <% } %>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- Mobile Top Bar -->
+      <header class="mobile-header">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+        <span class="mobile-logo">🦉 La Aventura</span>
+        <% if (isAdmin) { %>
+          <a href="/admin" class="mobile-admin">⚙️</a>
+        <% } %>
+      </header>
+
+      <!-- Mobile overlay -->
+      <div class="mobile-overlay" id="mobileOverlay"></div>
+
+      <%- body %>
+    </main>
+  </div>
+
+  <!-- BOTTOM MOBILE NAV -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegación móvil">
+    <a href="/" class="bottom-nav-item <%= currentPath === '/' ? 'active' : '' %>">
+      <span>🏠</span><small>Inicio</small>
+    </a>
+    <a href="/galeria" class="bottom-nav-item <%= currentPath.startsWith('/galeria') ? 'active' : '' %>">
+      <span>📸</span><small>Galería</small>
+    </a>
+    <a href="/juegos" class="bottom-nav-item <%= currentPath.startsWith('/juegos') ? 'active' : '' %>">
+      <span>🎮</span><small>Juegos</small>
+    </a>
+    <a href="/aprendemos" class="bottom-nav-item <%= currentPath.startsWith('/aprendemos') ? 'active' : '' %>">
+      <span>📚</span><small>Aprend.</small>
+    </a>
+    <a href="/tareas" class="bottom-nav-item <%= currentPath.startsWith('/tareas') ? 'active' : '' %>">
+      <span>🗒️</span><small>Tareas</small>
+    </a>
+    <a href="/escritor" class="bottom-nav-item <%= currentPath.startsWith('/escritor') ? 'active' : '' %>">
+      <span>✍️</span><small>Escritor</small>
+    </a>
+    <a href="/aprendizaje" class="bottom-nav-item <%= currentPath.startsWith('/aprendizaje') ? 'active' : '' %>">
+      <span>🌟</span><small>Aprend.</small>
+    </a>
+  </nav>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

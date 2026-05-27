@@ -1,0 +1,55 @@
+<!-- GALLERY PAGE -->
+<div class="page galeria-page">
+  <div class="page-header">
+    <div class="page-header-icon accent-coral">📸</div>
+    <div>
+      <h1 class="page-title">Galería de Recuerdos</h1>
+      <p class="page-subtitle">Momentos especiales que guardamos con cariño</p>
+    </div>
+  </div>
+
+  <!-- Filter pills -->
+  <div class="filter-pills fade-in-section">
+    <% ['Todos','Este mes','Actividades','Eventos'].forEach(cat => { %>
+      <a href="/galeria?category=<%= cat %>" 
+         class="filter-pill <%= activeCategory === cat ? 'active' : '' %>">
+        <%= cat %>
+      </a>
+    <% }); %>
+  </div>
+
+  <!-- Masonry grid -->
+  <% if (photos.length === 0) { %>
+    <div class="empty-state clay-card fade-in-section">
+      <div class="empty-icon">📷</div>
+      <h3>Aún no hay fotos</h3>
+      <p>Pronto agregaremos recuerdos de nuestras actividades.</p>
+    </div>
+  <% } else { %>
+    <div class="masonry-grid fade-in-section">
+      <% photos.forEach((photo, i) => { %>
+        <div class="polaroid-card" style="transform: rotate(<%= i % 2 === 0 ? '-2deg' : '2deg' %>)" 
+             data-lightbox="<%= photo.imageUrl %>" 
+             data-title="<%= photo.title %>">
+          <div class="polaroid-img-wrap">
+            <img src="<%= photo.imageUrl %>" alt="<%= photo.title %>" loading="lazy" />
+          </div>
+          <div class="polaroid-info">
+            <p class="polaroid-title"><%= photo.title %></p>
+            <p class="polaroid-date"><%= new Date(photo.date).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %></p>
+            <span class="category-tag tag-coral"><%= photo.category %></span>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">✕</button>
+    <div class="lightbox-content">
+      <img src="" alt="" id="lightboxImg" />
+      <p id="lightboxTitle" class="lightbox-title"></p>
+    </div>
+  </div>
+</div>
