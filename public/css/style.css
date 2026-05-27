@@ -2241,3 +2241,129 @@ textarea.form-input {
 
   .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ══════════════════════════════════════════════════
+   NEW HOME PAGE LAYOUT STYLES
+══════════════════════════════════════════════════ */
+
+/* School badge wrapper */
+.school-badge-wrap {
+  margin-bottom: 14px;
+}
+
+/* Hero title block */
+.hero-title-block {
+  background: linear-gradient(135deg, #f0e8ff 0%, #e8dcff 50%, #f5f0ff 100%);
+  border-radius: var(--radius-xl);
+  padding: 40px 48px 32px;
+  box-shadow: 0 12px 48px rgba(140,100,200,0.22), 0 4px 16px rgba(140,100,200,0.12);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.hero-title-block .hero-title {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.hero-title-block .hero-subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+
+.hero-title-block .hero-divider {
+  margin: 0 auto 0;
+}
+
+/* Hero classroom photo */
+.hero-photo-wrap {
+  margin-bottom: 28px;
+}
+
+.hero-photo-frame {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(140,100,200,0.25), 0 4px 16px rgba(0,0,0,0.08);
+  position: relative;
+  background: #3d2c6e;
+}
+
+.hero-photo {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.hero-photo-frame:hover .hero-photo {
+  transform: scale(1.02);
+}
+
+.hero-photo-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(40,20,80,0.75), transparent);
+  color: white;
+  padding: 20px 24px 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hero description card (with mascot) */
+.hero-description-card {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 36px;
+  background: linear-gradient(135deg, #f8f4ff, #f0ebff);
+  margin-bottom: 32px;
+}
+
+.mascot-inline {
+  flex-shrink: 0;
+  width: 90px;
+  animation: mascotFloat 3.5s ease-in-out infinite;
+}
+
+.owl-svg-sm {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(140,100,200,0.25));
+}
+
+.hero-desc-text {
+  flex: 1;
+}
+
+.hero-desc-text p {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #5c4a8a;
+  margin-bottom: 14px;
+}
+
+.hero-desc-text p:last-of-type {
+  margin-bottom: 24px;
+}
+
+/* Responsive for new home */
+@media (max-width: 700px) {
+  .hero-description-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .mascot-inline { width: 70px; }
+  .hero-title-block { padding: 28px 20px 24px; }
+  .hero-title-block .hero-title { font-size: 2rem; }
+  .hero-title-block .hero-subtitle { font-size: 1.05rem; }
+  .hero-photo { max-height: 260px; }
+  .hero-desc-text .hero-actions { justify-content: center; }
+}
+

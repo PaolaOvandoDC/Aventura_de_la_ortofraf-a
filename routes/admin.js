@@ -7,14 +7,16 @@ const Task = require('../models/Task');
 const StudentWork = require('../models/StudentWork');
 const LearningPost = require('../models/LearningPost');
 const WeeklyChallenge = require('../models/WeeklyChallenge');
+const SiteSettings = require('../models/SiteSettings');
+const upload = require('../middleware/upload');
 
-// Disable layout for ALL admin routes (they use standalone HTML)
+// Disable layout for ALL admin routes
 router.use((req, res, next) => {
   res.locals.layout = false;
   next();
 });
 
-// Auth middleware
+// ── AUTH ───────────────────────────────────────────────────
 const isAdmin = (req, res, next) => {
   if (req.session.isAdmin) return next();
   res.redirect('/admin/login');
@@ -28,17 +30,11 @@ router.get('/login', (req, res) => {
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
-  if (
-    username === process.env.ADMIN_USER &&
-    password === process.env.ADMIN_PASS
-  ) {
+  if (username === process.env.ADMIN_USER && password === process.env.ADMIN_PASS) {
     req.session.isAdmin = true;
     res.redirect('/admin');
   } else {
-    res.render('admin/login', { 
-      title: 'Admin Login', 
-      error: 'Usuario o contraseña incorrectos' 
-    });
+    res.render('admin/login', { title: 'Admin Login', error: 'Usuario o contraseña incorrectos' });
   }
 });
 
@@ -50,21 +46,21 @@ router.get('/logout', (req, res) => {
 // ── DASHBOARD ──────────────────────────────────────────────
 router.get('/', isAdmin, async (req, res) => {
   try {
-    const [photos, games, lessons, tasks, works, learnings, challenge] = await Promise.all([
+    const [photos, games, lessons, tasks, works, learnings, challenge, settings] = await Promise.all([
       Photo.countDocuments(),
       Game.countDocuments(),
       LessonPost.countDocuments(),
       Task.countDocuments(),
       StudentWork.countDocuments(),
       LearningPost.countDocuments(),
-      WeeklyChallenge.findOne({ active: true }).sort({ createdAt: -1 })
+      WeeklyChallenge.findOne({ active: true }).sort({ createdAt: -1 }),
+      SiteSettings.findOne().sort({ createdAt: -1 })
     ]);
-
     res.render('admin/dashboard', {
       title: 'Panel de Administración',
       stats: { photos, games, lessons, tasks, works, learnings },
-      challenge,
-      section: 'overview'
+      challenge, settings,
+      section: 'overview', msg: req.query.msg || ''
     });
   } catch (err) {
     console.error(err);
@@ -78,7 +74,20 @@ router.post('/challenge', isAdmin, async (req, res) => {
     const { text, hint } = req.body;
     await WeeklyChallenge.updateMany({}, { active: false });
     await WeeklyChallenge.create({ text, hint, active: true });
-    res.redirect('/admin?section=challenge&msg=saved');
+    res.redirect('/admin?msg=challenge_saved');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/admin');
+  }
+});
+
+// ── HERO PHOTO (Foto del inicio) ──────────────────────────
+router.post('/hero-photo', isAdmin, upload.single('heroPhoto'), async (req, res) => {
+  try {
+    const photoUrl = req.file ? `/uploads/${req.file.filename}` : req.body.heroPhotoUrl;
+    await SiteSettings.deleteMany({});
+    await SiteSettings.create({ heroPhotoUrl: photoUrl });
+    res.redirect('/admin?msg=photo_saved');
   } catch (err) {
     console.error(err);
     res.redirect('/admin');
@@ -89,15 +98,21 @@ router.post('/challenge', isAdmin, async (req, res) => {
 router.get('/fotos', isAdmin, async (req, res) => {
   const photos = await Photo.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Fotos',
-    stats: {}, challenge: null,
-    section: 'fotos', photos
+    title: 'Gestionar Fotos', stats: {}, challenge: null, settings: null,
+    section: 'fotos', photos, msg: req.query.msg || ''
   });
 });
 
-router.post('/fotos', isAdmin, async (req, res) => {
+router.post('/fotos', isAdmin, upload.single('imageFile'), async (req, res) => {
   try {
-    await Photo.create(req.body);
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
+    await Photo.create({
+      title: req.body.title,
+      imageUrl,
+      date: req.body.date || Date.now(),
+      category: req.body.category,
+      description: req.body.description
+    });
     res.redirect('/admin/fotos?msg=created');
   } catch (err) {
     console.error(err);
@@ -114,9 +129,8 @@ router.delete('/fotos/:id', isAdmin, async (req, res) => {
 router.get('/juegos', isAdmin, async (req, res) => {
   const games = await Game.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Juegos',
-    stats: {}, challenge: null,
-    section: 'juegos', games
+    title: 'Gestionar Juegos', stats: {}, challenge: null, settings: null,
+    section: 'juegos', games, msg: req.query.msg || ''
   });
 });
 
@@ -139,16 +153,19 @@ router.delete('/juegos/:id', isAdmin, async (req, res) => {
 router.get('/aprendemos', isAdmin, async (req, res) => {
   const lessons = await LessonPost.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Aprendemos Juntos',
-    stats: {}, challenge: null,
-    section: 'aprendemos', lessons
+    title: 'Gestionar Aprendemos', stats: {}, challenge: null, settings: null,
+    section: 'aprendemos', lessons, msg: req.query.msg || ''
   });
 });
 
-router.post('/aprendemos', isAdmin, async (req, res) => {
+router.post('/aprendemos', isAdmin, upload.single('imageFile'), async (req, res) => {
   try {
-    const data = { ...req.body, isNewPost: req.body.isNewPost === 'on' };
-    await LessonPost.create(data);
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
+    await LessonPost.create({
+      ...req.body,
+      imageUrl,
+      isNewPost: req.body.isNewPost === 'on'
+    });
     res.redirect('/admin/aprendemos?msg=created');
   } catch (err) {
     console.error(err);
@@ -165,9 +182,8 @@ router.delete('/aprendemos/:id', isAdmin, async (req, res) => {
 router.get('/tareas', isAdmin, async (req, res) => {
   const tasks = await Task.find().sort({ dueDate: 1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Tareas',
-    stats: {}, challenge: null,
-    section: 'tareas', tasks
+    title: 'Gestionar Tareas', stats: {}, challenge: null, settings: null,
+    section: 'tareas', tasks, msg: req.query.msg || ''
   });
 });
 
@@ -199,15 +215,20 @@ router.delete('/tareas/:id', isAdmin, async (req, res) => {
 router.get('/escritor', isAdmin, async (req, res) => {
   const works = await StudentWork.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Escritor',
-    stats: {}, challenge: null,
-    section: 'escritor', works
+    title: 'Gestionar Escritor', stats: {}, challenge: null, settings: null,
+    section: 'escritor', works, msg: req.query.msg || ''
   });
 });
 
-router.post('/escritor', isAdmin, async (req, res) => {
+router.post('/escritor', isAdmin, upload.single('imageFile'), async (req, res) => {
   try {
-    await StudentWork.create(req.body);
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
+    await StudentWork.create({
+      studentName: req.body.studentName,
+      title: req.body.title,
+      content: req.body.content,
+      imageUrl
+    });
     res.redirect('/admin/escritor?msg=created');
   } catch (err) {
     console.error(err);
@@ -224,9 +245,8 @@ router.delete('/escritor/:id', isAdmin, async (req, res) => {
 router.get('/aprendizaje', isAdmin, async (req, res) => {
   const learnings = await LearningPost.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
-    title: 'Gestionar Aprendizaje',
-    stats: {}, challenge: null,
-    section: 'aprendizaje', learnings
+    title: 'Gestionar Aprendizaje', stats: {}, challenge: null, settings: null,
+    section: 'aprendizaje', learnings, msg: req.query.msg || ''
   });
 });
 
