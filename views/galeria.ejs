@@ -8,88 +8,101 @@
     </div>
   </div>
 
+  <!-- ══ CARRUSEL PRINCIPAL ══════════════════════ -->
   <% if (photos.length > 0) { %>
-  <!-- ══ CARRUSEL ══════════════════════════════════════ -->
   <div class="carousel-section fade-in-section">
     <div class="carousel-wrapper">
-      <div class="carousel-track" id="carouselTrack">
-        <% photos.forEach((photo, i) => { %>
+      <div class="carousel-track" id="mainCarouselTrack">
+        <% photos.forEach((photo, i) => {
+             const allImgs = photo.allImages && photo.allImages.length ? photo.allImages : (photo.imageUrl ? [photo.imageUrl] : []);
+             const firstImg = allImgs[0] || '';
+        %>
           <div class="carousel-slide <%= i === 0 ? 'active' : '' %>">
-            <img src="<%= photo.imageUrl %>"
-                 alt="<%= photo.title %>"
-                 class="carousel-img"
-                 onerror="this.parentElement.querySelector('.carousel-fallback').style.display='flex'; this.style.display='none';" />
-            <div class="carousel-fallback" style="display:none;">
-              <span>🖼️</span>
-              <p><%= photo.title %></p>
-            </div>
+            <% if (firstImg) { %>
+              <img src="<%= firstImg %>" alt="<%= photo.title %>" class="carousel-img"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <div class="carousel-fallback" style="display:none;"><span>📸</span><p><%= photo.title %></p></div>
+            <% } else { %>
+              <div class="carousel-fallback"><span>📸</span><p><%= photo.title %></p></div>
+            <% } %>
             <div class="carousel-caption">
               <strong><%= photo.title %></strong>
-              <span><%= new Date(photo.date).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %></span>
+              <span><%= new Date(photo.date).toLocaleDateString('es-MX', {day:'numeric',month:'long',year:'numeric'}) %></span>
             </div>
           </div>
         <% }); %>
       </div>
-
-      <!-- Controls -->
-      <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Anterior">‹</button>
-      <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Siguiente">›</button>
-
-      <!-- Dots -->
-      <div class="carousel-dots" id="carouselDots">
+      <button class="carousel-btn carousel-prev" id="mainPrev" aria-label="Anterior">‹</button>
+      <button class="carousel-btn carousel-next" id="mainNext" aria-label="Siguiente">›</button>
+      <div class="carousel-dots" id="mainDots">
         <% photos.forEach((_, i) => { %>
-          <button class="carousel-dot <%= i === 0 ? 'active' : '' %>" 
-                  data-index="<%= i %>" 
-                  aria-label="Foto <%= i+1 %>"></button>
+          <button class="carousel-dot <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>"></button>
         <% }); %>
       </div>
     </div>
-    <p class="carousel-counter"><span id="currentSlide">1</span> / <%= photos.length %></p>
+    <p class="carousel-counter"><span id="mainCurrent">1</span> / <%= photos.length %></p>
   </div>
   <% } %>
 
-  <!-- ══ FILTROS ═══════════════════════════════════════ -->
+  <!-- ══ FILTROS ══════════════════════════════════ -->
   <div class="filter-pills fade-in-section">
     <% ['Todos','Este mes','Actividades','Eventos','Otros'].forEach(cat => { %>
-      <a href="/galeria?category=<%= cat %>" 
-         class="filter-pill <%= activeCategory === cat ? 'active' : '' %>">
-        <%= cat %>
-      </a>
+      <a href="/galeria?category=<%= cat %>"
+         class="filter-pill <%= activeCategory === cat ? 'active' : '' %>"><%= cat %></a>
     <% }); %>
   </div>
 
-  <!-- ══ GRID POLAROID ══════════════════════════════════ -->
+  <!-- ══ GRID POLAROID ════════════════════════════ -->
   <% if (photos.length === 0) { %>
     <div class="empty-state clay-card fade-in-section">
       <div class="empty-icon">📷</div>
       <h3>Aún no hay fotos</h3>
       <p>Pronto agregaremos recuerdos de nuestras actividades.</p>
-      <% if (locals.isAdmin) { %>
-        <a href="/admin/fotos" class="btn btn-primary" style="margin-top:16px">➕ Agregar fotos</a>
-      <% } %>
     </div>
   <% } else { %>
     <div class="masonry-grid fade-in-section">
-      <% photos.forEach((photo, i) => { %>
-        <div class="polaroid-card" 
-             style="transform: rotate(<%= i % 2 === 0 ? '-1.5deg' : '1.5deg' %>)"
-             data-lightbox="<%= photo.imageUrl %>" 
+      <% photos.forEach((photo, i) => {
+           const allImgs = photo.allImages && photo.allImages.length ? photo.allImages : (photo.imageUrl ? [photo.imageUrl] : []);
+      %>
+        <div class="polaroid-card" style="transform:rotate(<%= i%2===0?'-1.5deg':'1.5deg' %>)"
+             data-lightbox="<%= allImgs[0] || '' %>"
              data-title="<%= photo.title %>">
+
+          <!-- Mini carrusel si hay más de 1 imagen -->
           <div class="polaroid-img-wrap">
-            <img src="<%= photo.imageUrl %>" 
-                 alt="<%= photo.title %>" 
-                 loading="lazy"
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-            <!-- Fallback si la imagen no carga -->
-            <div class="photo-error-placeholder" style="display:none;">
-              <span>🖼️</span>
-              <small>Imagen no disponible</small>
-            </div>
+            <% if (allImgs.length === 0) { %>
+              <!-- Placeholder lavanda cuando no hay imagen -->
+              <div class="photo-placeholder-empty">
+                <span>📸</span>
+                <small><%= photo.title %></small>
+              </div>
+            <% } else if (allImgs.length === 1) { %>
+              <img src="<%= allImgs[0] %>" alt="<%= photo.title %>" loading="lazy"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+              <div class="photo-placeholder-empty" style="display:none;"><span>📸</span><small><%= photo.title %></small></div>
+            <% } else { %>
+              <!-- Mini carrusel -->
+              <div class="mini-carousel" id="mini-<%= photo._id %>">
+                <% allImgs.forEach((img, mi) => { %>
+                  <div class="mini-slide <%= mi===0?'active':'' %>">
+                    <img src="<%= img %>" alt="<%= photo.title %> <%= mi+1 %>" loading="lazy"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    <div class="photo-placeholder-empty" style="display:none;"><span>📸</span></div>
+                  </div>
+                <% }); %>
+                <button class="mini-prev" onclick="miniNav('<%= photo._id %>',-1)">‹</button>
+                <button class="mini-next" onclick="miniNav('<%= photo._id %>',1)">›</button>
+                <div class="mini-counter"><span class="mini-cur">1</span>/<%= allImgs.length %></div>
+              </div>
+            <% } %>
           </div>
+
           <div class="polaroid-info">
             <p class="polaroid-title"><%= photo.title %></p>
-            <p class="polaroid-date"><%= new Date(photo.date).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %></p>
+            <p class="polaroid-date"><%= new Date(photo.date).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}) %></p>
+            <% if (photo.description) { %><p class="polaroid-desc"><%= photo.description %></p><% } %>
             <span class="category-tag tag-coral"><%= photo.category %></span>
+            <% if (allImgs.length > 1) { %><span class="category-tag tag-mint">🖼️ <%= allImgs.length %> fotos</span><% } %>
           </div>
         </div>
       <% }); %>
@@ -107,38 +120,42 @@
 </div>
 
 <script>
-/* ── CAROUSEL ─────────────────────────────────── */
+/* ── MAIN CAROUSEL ──────────────────────────── */
 (function() {
-  const track = document.getElementById('carouselTrack');
+  const track  = document.getElementById('mainCarouselTrack');
   if (!track) return;
-
   const slides = track.querySelectorAll('.carousel-slide');
-  const dots   = document.querySelectorAll('.carousel-dot');
-  const counter = document.getElementById('currentSlide');
-  let current = 0;
-  let timer;
+  const dots   = document.querySelectorAll('#mainDots .carousel-dot');
+  const cur    = document.getElementById('mainCurrent');
+  let idx = 0, timer;
 
   function goTo(n) {
-    slides[current].classList.remove('active');
-    dots[current] && dots[current].classList.remove('active');
-    current = (n + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    dots[current] && dots[current].classList.add('active');
-    if (counter) counter.textContent = current + 1;
+    slides[idx].classList.remove('active');
+    dots[idx]?.classList.remove('active');
+    idx = (n + slides.length) % slides.length;
+    slides[idx].classList.add('active');
+    dots[idx]?.classList.add('active');
+    if (cur) cur.textContent = idx + 1;
   }
+  function start() { clearInterval(timer); timer = setInterval(() => goTo(idx+1), 4500); }
 
-  function startTimer() {
-    clearInterval(timer);
-    timer = setInterval(() => goTo(current + 1), 4000);
-  }
-
-  document.getElementById('carouselNext')?.addEventListener('click', () => { goTo(current + 1); startTimer(); });
-  document.getElementById('carouselPrev')?.addEventListener('click', () => { goTo(current - 1); startTimer(); });
-
-  dots.forEach(dot => {
-    dot.addEventListener('click', () => { goTo(parseInt(dot.dataset.index)); startTimer(); });
-  });
-
-  startTimer();
+  document.getElementById('mainNext')?.addEventListener('click', () => { goTo(idx+1); start(); });
+  document.getElementById('mainPrev')?.addEventListener('click', () => { goTo(idx-1); start(); });
+  dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.index); start(); }));
+  start();
 })();
+
+/* ── MINI CAROUSEL ──────────────────────────── */
+const miniState = {};
+function miniNav(id, dir) {
+  const el     = document.getElementById('mini-' + id);
+  if (!el) return;
+  const slides = el.querySelectorAll('.mini-slide');
+  if (!miniState[id]) miniState[id] = 0;
+  slides[miniState[id]].classList.remove('active');
+  miniState[id] = (miniState[id] + dir + slides.length) % slides.length;
+  slides[miniState[id]].classList.add('active');
+  const c = el.querySelector('.mini-cur');
+  if (c) c.textContent = miniState[id] + 1;
+}
 </script>

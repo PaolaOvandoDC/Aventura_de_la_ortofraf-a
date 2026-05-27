@@ -8,21 +8,22 @@ const StudentWork = require('../models/StudentWork');
 const LearningPost = require('../models/LearningPost');
 const WeeklyChallenge = require('../models/WeeklyChallenge');
 const SiteSettings = require('../models/SiteSettings');
-const upload = require('../middleware/upload');
+const { upload } = require('../middleware/upload');
 
 // Disable layout for ALL admin routes
-router.use((req, res, next) => {
-  res.locals.layout = false;
-  next();
-});
+router.use((req, res, next) => { res.locals.layout = false; next(); });
 
-// ── AUTH ───────────────────────────────────────────────────
+// ── AUTH ─────────────────────────────────────────
 const isAdmin = (req, res, next) => {
   if (req.session.isAdmin) return next();
   res.redirect('/admin/login');
 };
 
-// ── LOGIN ──────────────────────────────────────────────────
+// ── Render helper — pasa msg a todas las vistas admin ─
+const render = (res, view, data) =>
+  res.render(view, { settings: null, challenge: null, msg: '', ...data });
+
+// ── LOGIN ────────────────────────────────────────
 router.get('/login', (req, res) => {
   if (req.session.isAdmin) return res.redirect('/admin');
   res.render('admin/login', { title: 'Admin Login', error: null });
@@ -38,63 +39,41 @@ router.post('/login', (req, res) => {
   }
 });
 
-router.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/admin/login');
-});
+router.get('/logout', (req, res) => { req.session.destroy(); res.redirect('/admin/login'); });
 
-// ── DASHBOARD ──────────────────────────────────────────────
+// ── DASHBOARD ────────────────────────────────────
 router.get('/', isAdmin, async (req, res) => {
   try {
     const [photos, games, lessons, tasks, works, learnings, challenge, settings] = await Promise.all([
-      Photo.countDocuments(),
-      Game.countDocuments(),
-      LessonPost.countDocuments(),
-      Task.countDocuments(),
-      StudentWork.countDocuments(),
-      LearningPost.countDocuments(),
+      Photo.countDocuments(), Game.countDocuments(), LessonPost.countDocuments(),
+      Task.countDocuments(), StudentWork.countDocuments(), LearningPost.countDocuments(),
       WeeklyChallenge.findOne({ active: true }).sort({ createdAt: -1 }),
       SiteSettings.findOne().sort({ createdAt: -1 })
     ]);
     res.render('admin/dashboard', {
       title: 'Panel de Administración',
       stats: { photos, games, lessons, tasks, works, learnings },
-      challenge, settings,
-      section: 'overview', msg: req.query.msg || ''
+      challenge, settings, section: 'overview', msg: req.query.msg || ''
     });
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/login');
-  }
+  } catch (err) { console.error(err); res.redirect('/admin/login'); }
 });
 
-// ── WEEKLY CHALLENGE ──────────────────────────────────────
+// ── WEEKLY CHALLENGE ─────────────────────────────
 router.post('/challenge', isAdmin, async (req, res) => {
-  try {
-    const { text, hint } = req.body;
-    await WeeklyChallenge.updateMany({}, { active: false });
-    await WeeklyChallenge.create({ text, hint, active: true });
-    res.redirect('/admin?msg=challenge_saved');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin');
-  }
+  await WeeklyChallenge.updateMany({}, { active: false });
+  await WeeklyChallenge.create({ text: req.body.text, hint: req.body.hint, active: true });
+  res.redirect('/admin?msg=1');
 });
 
-// ── HERO PHOTO (Foto del inicio) ──────────────────────────
+// ── HERO PHOTO ───────────────────────────────────
 router.post('/hero-photo', isAdmin, upload.single('heroPhoto'), async (req, res) => {
-  try {
-    const photoUrl = req.file ? `/uploads/${req.file.filename}` : req.body.heroPhotoUrl;
-    await SiteSettings.deleteMany({});
-    await SiteSettings.create({ heroPhotoUrl: photoUrl });
-    res.redirect('/admin?msg=photo_saved');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin');
-  }
+  const photoUrl = req.file ? req.file.path : req.body.heroPhotoUrl;
+  await SiteSettings.deleteMany({});
+  await SiteSettings.create({ heroPhotoUrl: photoUrl });
+  res.redirect('/admin?msg=1');
 });
 
-// ── PHOTOS CRUD ────────────────────────────────────────────
+// ── PHOTOS CRUD ──────────────────────────────────
 router.get('/fotos', isAdmin, async (req, res) => {
   const photos = await Photo.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
@@ -103,29 +82,44 @@ router.get('/fotos', isAdmin, async (req, res) => {
   });
 });
 
-router.post('/fotos', isAdmin, upload.single('imageFile'), async (req, res) => {
+// Hasta 5 fotos por álbum
+router.post('/fotos', isAdmin, upload.array('imageFiles', 5), async (req, res) => {
   try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
+    let imageUrls = [];
+
+    // Archivos subidos a Cloudinary
+    if (req.files && req.files.length > 0) {
+      imageUrls = req.files.map(f => f.path);
+    }
+    // URL externa como fallback
+    if (req.body.imageUrl && req.body.imageUrl.trim()) {
+      imageUrls.unshift(req.body.imageUrl.trim());
+    }
+
+    const imageUrl  = imageUrls[0] || '';
+    const images    = imageUrls.slice(1);
+
     await Photo.create({
-      title: req.body.title,
+      title:       req.body.title,
       imageUrl,
-      date: req.body.date || Date.now(),
-      category: req.body.category,
-      description: req.body.description
+      images,
+      date:        req.body.date || Date.now(),
+      category:    req.body.category || 'Actividades',
+      description: req.body.description || ''
     });
-    res.redirect('/admin/fotos?msg=created');
+    res.redirect('/admin/fotos?msg=1');
   } catch (err) {
-    console.error(err);
-    res.redirect('/admin/fotos');
+    console.error('Error al subir foto:', err);
+    res.redirect('/admin/fotos?error=1');
   }
 });
 
 router.delete('/fotos/:id', isAdmin, async (req, res) => {
   await Photo.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/fotos?msg=deleted');
+  res.redirect('/admin/fotos?msg=1');
 });
 
-// ── GAMES CRUD ─────────────────────────────────────────────
+// ── GAMES CRUD ───────────────────────────────────
 router.get('/juegos', isAdmin, async (req, res) => {
   const games = await Game.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
@@ -133,23 +127,16 @@ router.get('/juegos', isAdmin, async (req, res) => {
     section: 'juegos', games, msg: req.query.msg || ''
   });
 });
-
 router.post('/juegos', isAdmin, async (req, res) => {
-  try {
-    await Game.create(req.body);
-    res.redirect('/admin/juegos?msg=created');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/juegos');
-  }
+  await Game.create(req.body);
+  res.redirect('/admin/juegos?msg=1');
 });
-
 router.delete('/juegos/:id', isAdmin, async (req, res) => {
   await Game.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/juegos?msg=deleted');
+  res.redirect('/admin/juegos?msg=1');
 });
 
-// ── LESSONS CRUD ───────────────────────────────────────────
+// ── LESSONS CRUD ─────────────────────────────────
 router.get('/aprendemos', isAdmin, async (req, res) => {
   const lessons = await LessonPost.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
@@ -157,28 +144,17 @@ router.get('/aprendemos', isAdmin, async (req, res) => {
     section: 'aprendemos', lessons, msg: req.query.msg || ''
   });
 });
-
 router.post('/aprendemos', isAdmin, upload.single('imageFile'), async (req, res) => {
-  try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
-    await LessonPost.create({
-      ...req.body,
-      imageUrl,
-      isNewPost: req.body.isNewPost === 'on'
-    });
-    res.redirect('/admin/aprendemos?msg=created');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/aprendemos');
-  }
+  const imageUrl = req.file ? req.file.path : (req.body.imageUrl || '');
+  await LessonPost.create({ ...req.body, imageUrl, isNewPost: req.body.isNewPost === 'on' });
+  res.redirect('/admin/aprendemos?msg=1');
 });
-
 router.delete('/aprendemos/:id', isAdmin, async (req, res) => {
   await LessonPost.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/aprendemos?msg=deleted');
+  res.redirect('/admin/aprendemos?msg=1');
 });
 
-// ── TASKS CRUD ─────────────────────────────────────────────
+// ── TASKS CRUD ───────────────────────────────────
 router.get('/tareas', isAdmin, async (req, res) => {
   const tasks = await Task.find().sort({ dueDate: 1 });
   res.render('admin/dashboard', {
@@ -186,32 +162,20 @@ router.get('/tareas', isAdmin, async (req, res) => {
     section: 'tareas', tasks, msg: req.query.msg || ''
   });
 });
-
 router.post('/tareas', isAdmin, async (req, res) => {
-  try {
-    await Task.create(req.body);
-    res.redirect('/admin/tareas?msg=created');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/tareas');
-  }
+  await Task.create(req.body);
+  res.redirect('/admin/tareas?msg=1');
 });
-
 router.put('/tareas/:id', isAdmin, async (req, res) => {
-  try {
-    await Task.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect('/admin/tareas?msg=updated');
-  } catch (err) {
-    res.redirect('/admin/tareas');
-  }
+  await Task.findByIdAndUpdate(req.params.id, req.body);
+  res.redirect('/admin/tareas?msg=1');
 });
-
 router.delete('/tareas/:id', isAdmin, async (req, res) => {
   await Task.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/tareas?msg=deleted');
+  res.redirect('/admin/tareas?msg=1');
 });
 
-// ── STUDENT WORKS CRUD ─────────────────────────────────────
+// ── STUDENT WORKS CRUD ───────────────────────────
 router.get('/escritor', isAdmin, async (req, res) => {
   const works = await StudentWork.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
@@ -219,29 +183,17 @@ router.get('/escritor', isAdmin, async (req, res) => {
     section: 'escritor', works, msg: req.query.msg || ''
   });
 });
-
 router.post('/escritor', isAdmin, upload.single('imageFile'), async (req, res) => {
-  try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
-    await StudentWork.create({
-      studentName: req.body.studentName,
-      title: req.body.title,
-      content: req.body.content,
-      imageUrl
-    });
-    res.redirect('/admin/escritor?msg=created');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/escritor');
-  }
+  const imageUrl = req.file ? req.file.path : (req.body.imageUrl || '');
+  await StudentWork.create({ studentName: req.body.studentName, title: req.body.title, content: req.body.content, imageUrl });
+  res.redirect('/admin/escritor?msg=1');
 });
-
 router.delete('/escritor/:id', isAdmin, async (req, res) => {
   await StudentWork.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/escritor?msg=deleted');
+  res.redirect('/admin/escritor?msg=1');
 });
 
-// ── LEARNING POSTS CRUD ────────────────────────────────────
+// ── LEARNING POSTS CRUD ──────────────────────────
 router.get('/aprendizaje', isAdmin, async (req, res) => {
   const learnings = await LearningPost.find().sort({ createdAt: -1 });
   res.render('admin/dashboard', {
@@ -249,20 +201,13 @@ router.get('/aprendizaje', isAdmin, async (req, res) => {
     section: 'aprendizaje', learnings, msg: req.query.msg || ''
   });
 });
-
 router.post('/aprendizaje', isAdmin, async (req, res) => {
-  try {
-    await LearningPost.create(req.body);
-    res.redirect('/admin/aprendizaje?msg=created');
-  } catch (err) {
-    console.error(err);
-    res.redirect('/admin/aprendizaje');
-  }
+  await LearningPost.create(req.body);
+  res.redirect('/admin/aprendizaje?msg=1');
 });
-
 router.delete('/aprendizaje/:id', isAdmin, async (req, res) => {
   await LearningPost.findByIdAndDelete(req.params.id);
-  res.redirect('/admin/aprendizaje?msg=deleted');
+  res.redirect('/admin/aprendizaje?msg=1');
 });
 
 module.exports = router;

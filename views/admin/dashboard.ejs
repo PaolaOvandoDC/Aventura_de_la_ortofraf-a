@@ -9,40 +9,32 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
   <style>
-    .file-input-wrap { display:flex; flex-direction:column; gap:6px; }
-    .file-input-wrap input[type="file"] {
-      padding: 10px 14px;
-      border: 2px dashed rgba(180,140,230,0.5);
-      border-radius: 14px;
-      background: #f9f6ff;
-      font-family: var(--font-body);
-      font-size: 0.88rem;
-      color: #5c3a9e;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .file-input-wrap input[type="file"]:hover { border-color: var(--lavender-dark); }
-    .file-label { font-weight:700; font-size:0.85rem; color:#5c3a9e; }
-    .file-hint { font-size:0.75rem; color:#a08cc8; font-style:italic; }
-    .preview-thumb { width:80px; height:60px; object-fit:cover; border-radius:10px; margin-top:6px; border:2px solid rgba(180,140,230,0.25); }
-    .hero-photo-current { width:100%; max-height:220px; object-fit:cover; border-radius:16px; margin-bottom:12px; box-shadow: 0 4px 16px rgba(140,100,200,0.15); }
-    .section-divider { border:none; border-top: 2px dashed rgba(140,100,200,0.15); margin: 8px 0 20px; }
-    .msg-success { background:var(--green-light); color:#2b6b3a; padding:10px 18px; border-radius:var(--radius-pill); font-weight:700; font-size:0.88rem; display:inline-block; margin-bottom:16px; }
+    .file-input-wrap{display:flex;flex-direction:column;gap:6px}
+    .file-input-wrap input[type="file"]{padding:10px 14px;border:2px dashed rgba(180,140,230,0.5);border-radius:14px;background:#f9f6ff;font-family:var(--font-body);font-size:.88rem;color:#5c3a9e;cursor:pointer;transition:border-color .2s}
+    .file-input-wrap input[type="file"]:hover{border-color:var(--lavender-dark)}
+    .file-label{font-weight:700;font-size:.85rem;color:#5c3a9e}
+    .file-hint{font-size:.75rem;color:#a08cc8;font-style:italic}
+    .preview-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .preview-thumb{width:80px;height:60px;object-fit:cover;border-radius:10px;border:2px solid rgba(180,140,230,0.25)}
+    .hero-photo-current{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-bottom:12px;box-shadow:0 4px 16px rgba(140,100,200,0.15)}
+    .msg-success{background:var(--green-light);color:#2b6b3a;padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:.88rem;display:inline-block;margin-bottom:16px}
+    .or-divider{display:flex;align-items:center;gap:12px;color:#a08cc8;font-size:.8rem;font-weight:700;margin:10px 0}
+    .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:rgba(160,140,200,0.25)}
   </style>
 </head>
 <body class="admin-body">
 <div class="admin-wrapper">
 
-  <!-- Admin Sidebar -->
+  <!-- SIDEBAR -->
   <nav class="admin-sidebar">
     <div class="admin-logo"><span>🦉</span><span>Admin Panel</span></div>
     <ul class="admin-nav">
-      <li><a href="/admin"           class="admin-nav-item <%= section==='overview'   ? 'active':'' %>">📊 Resumen</a></li>
-      <li><a href="/admin/fotos"     class="admin-nav-item <%= section==='fotos'      ? 'active':'' %>">📸 Fotos</a></li>
-      <li><a href="/admin/juegos"    class="admin-nav-item <%= section==='juegos'     ? 'active':'' %>">🎮 Juegos</a></li>
-      <li><a href="/admin/aprendemos"class="admin-nav-item <%= section==='aprendemos'? 'active':'' %>">📚 Aprendemos</a></li>
-      <li><a href="/admin/tareas"    class="admin-nav-item <%= section==='tareas'     ? 'active':'' %>">🗒️ Tareas</a></li>
-      <li><a href="/admin/escritor"  class="admin-nav-item <%= section==='escritor'   ? 'active':'' %>">✍️ Escritor</a></li>
+      <li><a href="/admin"            class="admin-nav-item <%= section==='overview'    ? 'active':'' %>">📊 Resumen</a></li>
+      <li><a href="/admin/fotos"      class="admin-nav-item <%= section==='fotos'       ? 'active':'' %>">📸 Fotos</a></li>
+      <li><a href="/admin/juegos"     class="admin-nav-item <%= section==='juegos'      ? 'active':'' %>">🎮 Juegos</a></li>
+      <li><a href="/admin/aprendemos" class="admin-nav-item <%= section==='aprendemos'  ? 'active':'' %>">📚 Aprendemos</a></li>
+      <li><a href="/admin/tareas"     class="admin-nav-item <%= section==='tareas'      ? 'active':'' %>">🗒️ Tareas</a></li>
+      <li><a href="/admin/escritor"   class="admin-nav-item <%= section==='escritor'    ? 'active':'' %>">✍️ Escritor</a></li>
       <li><a href="/admin/aprendizaje" class="admin-nav-item <%= section==='aprendizaje'? 'active':'' %>">🌟 Aprendizaje</a></li>
     </ul>
     <div class="admin-sidebar-footer">
@@ -51,445 +43,207 @@
     </div>
   </nav>
 
-  <!-- Admin Main -->
+  <!-- MAIN -->
   <main class="admin-main">
     <div class="admin-topbar">
       <h1 class="admin-page-title"><%= title %></h1>
-      <% if (msg) { %>
-        <div class="msg-success">✅ ¡Guardado exitosamente!</div>
-      <% } %>
+      <% if (msg) { %><div class="msg-success">✅ ¡Guardado exitosamente!</div><% } %>
     </div>
 
-    <!-- ══ OVERVIEW ════════════════════════════════════ -->
+    <!-- ══════ OVERVIEW ══════════════════════════ -->
     <% if (section === 'overview') { %>
-
-      <!-- Stats -->
       <div class="admin-stats-grid">
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">📸</div>
-          <div class="admin-stat-num"><%= stats.photos %></div>
-          <div class="admin-stat-label">Fotos</div>
-          <a href="/admin/fotos" class="btn btn-sm">Gestionar</a>
-        </div>
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">🎮</div>
-          <div class="admin-stat-num"><%= stats.games %></div>
-          <div class="admin-stat-label">Juegos</div>
-          <a href="/admin/juegos" class="btn btn-sm">Gestionar</a>
-        </div>
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">📚</div>
-          <div class="admin-stat-num"><%= stats.lessons %></div>
-          <div class="admin-stat-label">Lecciones</div>
-          <a href="/admin/aprendemos" class="btn btn-sm">Gestionar</a>
-        </div>
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">🗒️</div>
-          <div class="admin-stat-num"><%= stats.tasks %></div>
-          <div class="admin-stat-label">Tareas</div>
-          <a href="/admin/tareas" class="btn btn-sm">Gestionar</a>
-        </div>
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">✍️</div>
-          <div class="admin-stat-num"><%= stats.works %></div>
-          <div class="admin-stat-label">Producciones</div>
-          <a href="/admin/escritor" class="btn btn-sm">Gestionar</a>
-        </div>
-        <div class="admin-stat-card clay-card">
-          <div class="admin-stat-icon">🌟</div>
-          <div class="admin-stat-num"><%= stats.learnings %></div>
-          <div class="admin-stat-label">Aprendizajes</div>
-          <a href="/admin/aprendizaje" class="btn btn-sm">Gestionar</a>
-        </div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">📸</div><div class="admin-stat-num"><%= stats.photos %></div><div class="admin-stat-label">Fotos</div><a href="/admin/fotos" class="btn btn-sm">Gestionar</a></div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">🎮</div><div class="admin-stat-num"><%= stats.games %></div><div class="admin-stat-label">Juegos</div><a href="/admin/juegos" class="btn btn-sm">Gestionar</a></div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">📚</div><div class="admin-stat-num"><%= stats.lessons %></div><div class="admin-stat-label">Lecciones</div><a href="/admin/aprendemos" class="btn btn-sm">Gestionar</a></div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">🗒️</div><div class="admin-stat-num"><%= stats.tasks %></div><div class="admin-stat-label">Tareas</div><a href="/admin/tareas" class="btn btn-sm">Gestionar</a></div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">✍️</div><div class="admin-stat-num"><%= stats.works %></div><div class="admin-stat-label">Producciones</div><a href="/admin/escritor" class="btn btn-sm">Gestionar</a></div>
+        <div class="admin-stat-card clay-card"><div class="admin-stat-icon">🌟</div><div class="admin-stat-num"><%= stats.learnings %></div><div class="admin-stat-label">Aprendizajes</div><a href="/admin/aprendizaje" class="btn btn-sm">Gestionar</a></div>
       </div>
 
-      <!-- Foto principal del Inicio -->
+      <!-- Foto principal del inicio -->
       <div class="admin-form-card clay-card">
-        <h2 class="admin-form-title">🖼️ Foto Principal de la Página de Inicio</h2>
-        <% if (settings && settings.heroPhotoUrl) { %>
-          <p style="font-weight:700;color:#5c3a9e;margin-bottom:8px;">Foto actual:</p>
-          <img src="<%= settings.heroPhotoUrl %>" alt="Foto actual" class="hero-photo-current" />
-        <% } else { %>
-          <p style="color:#a08cc8;margin-bottom:12px;font-style:italic;">No hay foto cargada aún.</p>
-        <% } %>
+        <h2 class="admin-form-title">🖼️ Foto Principal del Inicio</h2>
+        <% if (settings && settings.heroPhotoUrl) { %><img src="<%= settings.heroPhotoUrl %>" class="hero-photo-current" /><% } %>
         <form action="/admin/hero-photo" method="POST" enctype="multipart/form-data" class="admin-form">
           <div class="form-group file-input-wrap">
             <label class="file-label">📂 Selecciona una foto desde tu computadora</label>
-            <input type="file" name="heroPhoto" accept="image/*" onchange="previewImg(this,'heroPreview')" />
-            <img id="heroPreview" class="preview-thumb" style="display:none" />
-            <span class="file-hint">Formatos: JPG, PNG, WEBP. Máximo 10 MB.</span>
+            <input type="file" name="heroPhoto" accept="image/*" />
+            <span class="file-hint">Se sube a Cloudinary automáticamente. Máx 10 MB.</span>
           </div>
-          <button type="submit" class="btn btn-primary">💾 Guardar foto del inicio</button>
+          <button type="submit" class="btn btn-primary">💾 Guardar foto</button>
         </form>
       </div>
 
-      <!-- Desafío Semanal -->
+      <!-- Desafío semanal -->
       <div class="admin-form-card clay-card">
         <h2 class="admin-form-title">⚡ Desafío Ortográfico Semanal</h2>
-        <% if (challenge) { %>
-          <div class="current-challenge"><strong>Actual:</strong> <%= challenge.text %><% if(challenge.hint){ %><br/><em>Pista: <%= challenge.hint %></em><% } %></div>
-        <% } %>
+        <% if (challenge) { %><div class="current-challenge"><strong>Actual:</strong> <%= challenge.text %></div><% } %>
         <form action="/admin/challenge" method="POST" class="admin-form">
-          <div class="form-group">
-            <label>Texto del desafío *</label>
-            <textarea name="text" class="form-input" rows="3" required><%= challenge ? challenge.text : '' %></textarea>
-          </div>
-          <div class="form-group">
-            <label>Pista (opcional)</label>
-            <input type="text" name="hint" class="form-input" value="<%= challenge ? challenge.hint : '' %>" />
-          </div>
+          <div class="form-group"><label>Texto del desafío *</label><textarea name="text" class="form-input" rows="3" required><%= challenge ? challenge.text : '' %></textarea></div>
+          <div class="form-group"><label>Pista (opcional)</label><input type="text" name="hint" class="form-input" value="<%= challenge ? challenge.hint||'' : '' %>" /></div>
           <button type="submit" class="btn btn-primary">💾 Guardar Desafío</button>
         </form>
       </div>
 
-    <!-- ══ FOTOS ════════════════════════════════════════ -->
+    <!-- ══════ FOTOS ════════════════════════════ -->
     <% } else if (section === 'fotos') { %>
       <div class="admin-form-card clay-card">
-        <h2 class="admin-form-title">➕ Agregar Foto a la Galería</h2>
+        <h2 class="admin-form-title">➕ Agregar Fotos a la Galería</h2>
         <form action="/admin/fotos" method="POST" enctype="multipart/form-data" class="admin-form">
           <div class="form-row">
-            <div class="form-group">
-              <label>Título *</label>
-              <input type="text" name="title" class="form-input" required placeholder="Ej: Día del libro" />
-            </div>
-            <div class="form-group">
-              <label>Categoría</label>
-              <select name="category" class="form-input">
-                <option>Actividades</option><option>Eventos</option><option>Otros</option>
-              </select>
+            <div class="form-group"><label>Título *</label><input type="text" name="title" class="form-input" required placeholder="Ej: Día del libro" /></div>
+            <div class="form-group"><label>Categoría</label>
+              <select name="category" class="form-input"><option>Actividades</option><option>Eventos</option><option>Este mes</option><option>Otros</option></select>
             </div>
           </div>
+
           <div class="form-group file-input-wrap">
-            <label class="file-label">📂 Selecciona la foto desde tu computadora *</label>
-            <input type="file" name="imageFile" accept="image/*" required onchange="previewImg(this,'fotoPreview')" />
-            <img id="fotoPreview" class="preview-thumb" style="display:none" />
-            <span class="file-hint">Formatos: JPG, PNG, WEBP. Máximo 10 MB.</span>
+            <label class="file-label">📂 Selecciona hasta 5 fotos desde tu computadora</label>
+            <input type="file" name="imageFiles" accept="image/*" multiple onchange="previewMulti(this)" />
+            <span class="file-hint">Se suben a Cloudinary. Formatos: JPG, PNG, WEBP. Máx 10 MB cada una.</span>
+            <div class="preview-row" id="multiPreview"></div>
           </div>
+
+          <div class="or-divider">ó pega una URL externa</div>
+          <div class="form-group"><input type="url" name="imageUrl" class="form-input" placeholder="https://ejemplo.com/foto.jpg (opcional)" /></div>
+
           <div class="form-row">
-            <div class="form-group">
-              <label>Fecha</label>
-              <input type="date" name="date" class="form-input" />
-            </div>
-            <div class="form-group">
-              <label>Descripción</label>
-              <input type="text" name="description" class="form-input" placeholder="Descripción breve..." />
-            </div>
+            <div class="form-group"><label>Fecha</label><input type="date" name="date" class="form-input" /></div>
+            <div class="form-group"><label>Descripción</label><input type="text" name="description" class="form-input" placeholder="Breve descripción..." /></div>
           </div>
-          <button type="submit" class="btn btn-primary">📸 Agregar Foto</button>
+          <button type="submit" class="btn btn-primary">📸 Agregar Fotos</button>
         </form>
       </div>
 
       <div class="admin-table-card clay-card">
         <h2 class="admin-form-title">Fotos existentes (<%= photos.length %>)</h2>
         <% if (!photos.length) { %><p class="admin-empty">No hay fotos aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% photos.forEach(p => { %>
-              <div class="admin-item">
-                <img src="<%= p.imageUrl %>" alt="<%= p.title %>" class="admin-thumb" />
-                <div class="admin-item-info">
-                  <strong><%= p.title %></strong>
-                  <span class="tag"><%= p.category %></span>
-                </div>
-                <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST">
-                  <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                </form>
+          <div class="admin-cards-list"><% photos.forEach(p => { %>
+            <div class="admin-item">
+              <% if (p.imageUrl) { %><img src="<%= p.imageUrl %>" class="admin-thumb" /><% } else { %><span class="admin-emoji">📸</span><% } %>
+              <div class="admin-item-info">
+                <strong><%= p.title %></strong>
+                <span class="tag"><%= p.category %></span>
+                <% const cnt = (p.allImages||[]).length; if(cnt>1){ %><span class="tag tag-new">🖼️ <%= cnt %> fotos</span><% } %>
               </div>
-            <% }); %>
-          </div>
+              <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+            </div>
+          <% }); %></div>
         <% } %>
       </div>
 
-    <!-- ══ JUEGOS ═══════════════════════════════════════ -->
+    <!-- ══════ JUEGOS ═══════════════════════════ -->
     <% } else if (section === 'juegos') { %>
       <div class="admin-form-card clay-card">
         <h2 class="admin-form-title">➕ Agregar Juego</h2>
         <form action="/admin/juegos" method="POST" class="admin-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre *</label>
-              <input type="text" name="name" class="form-input" required placeholder="Ej: Gimkit Ortografía" />
-            </div>
-            <div class="form-group">
-              <label>Emoji</label>
-              <input type="text" name="imageEmoji" class="form-input" value="🎮" maxlength="4" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Descripción *</label>
-            <textarea name="description" class="form-input" rows="2" required></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Dificultad (1-5)</label>
-              <input type="number" name="difficulty" class="form-input" min="1" max="5" value="3" />
-            </div>
-            <div class="form-group">
-              <label>URL externa (opcional)</label>
-              <input type="url" name="externalUrl" class="form-input" placeholder="https://..." />
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary">🎮 Agregar Juego</button>
+          <div class="form-row"><div class="form-group"><label>Nombre *</label><input type="text" name="name" class="form-input" required /></div><div class="form-group"><label>Emoji</label><input type="text" name="imageEmoji" class="form-input" value="🎮" maxlength="4" /></div></div>
+          <div class="form-group"><label>Descripción *</label><textarea name="description" class="form-input" rows="2" required></textarea></div>
+          <div class="form-row"><div class="form-group"><label>Dificultad (1-5)</label><input type="number" name="difficulty" class="form-input" min="1" max="5" value="3" /></div><div class="form-group"><label>URL externa</label><input type="url" name="externalUrl" class="form-input" placeholder="https://..." /></div></div>
+          <button type="submit" class="btn btn-primary">🎮 Agregar</button>
         </form>
       </div>
-      <div class="admin-table-card clay-card">
-        <h2 class="admin-form-title">Juegos (<%= games.length %>)</h2>
-        <% if (!games.length) { %><p class="admin-empty">No hay juegos aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% games.forEach(g => { %>
-              <div class="admin-item">
-                <span class="admin-emoji"><%= g.imageEmoji %></span>
-                <div class="admin-item-info"><strong><%= g.name %></strong></div>
-                <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST">
-                  <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                </form>
-              </div>
-            <% }); %>
-          </div>
-        <% } %>
+      <div class="admin-table-card clay-card"><h2 class="admin-form-title">Juegos (<%= games.length %>)</h2>
+        <% if(!games.length){%><p class="admin-empty">No hay juegos.</p><%}else{%><div class="admin-cards-list"><%games.forEach(g=>{%>
+          <div class="admin-item"><span class="admin-emoji"><%= g.imageEmoji %></span><div class="admin-item-info"><strong><%= g.name %></strong></div>
+          <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+        <%});%></div><%}%>
       </div>
 
-    <!-- ══ APRENDEMOS ════════════════════════════════════ -->
+    <!-- ══════ APRENDEMOS ═══════════════════════ -->
     <% } else if (section === 'aprendemos') { %>
       <div class="admin-form-card clay-card">
         <h2 class="admin-form-title">➕ Agregar Publicación</h2>
         <form action="/admin/aprendemos" method="POST" enctype="multipart/form-data" class="admin-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Tema *</label>
-              <input type="text" name="topic" class="form-input" required placeholder="Ej: Las tildes" />
-            </div>
-            <div class="form-group">
-              <label>Categoría</label>
-              <select name="category" class="form-input">
-                <option>Lectura</option><option>Escritura</option>
-                <option>Ortografía</option><option>Expresión</option><option>Otros</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Descripción *</label>
-            <textarea name="description" class="form-input" rows="3" required></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha</label>
-              <input type="date" name="date" class="form-input" />
-            </div>
-            <div class="form-group file-input-wrap">
-              <label class="file-label">📂 Imagen (opcional)</label>
-              <input type="file" name="imageFile" accept="image/*" onchange="previewImg(this,'aprenPreview')" />
-              <img id="aprenPreview" class="preview-thumb" style="display:none" />
-            </div>
-          </div>
-          <div class="form-group form-check">
-            <input type="checkbox" id="isNewPost" name="isNewPost" class="form-checkbox" />
-            <label for="isNewPost">🆕 Marcar como "Lo nuevo esta semana"</label>
-          </div>
-          <button type="submit" class="btn btn-primary">📚 Agregar Publicación</button>
+          <div class="form-row"><div class="form-group"><label>Tema *</label><input type="text" name="topic" class="form-input" required /></div>
+          <div class="form-group"><label>Categoría</label><select name="category" class="form-input"><option>Lectura</option><option>Escritura</option><option>Ortografía</option><option>Expresión</option><option>Otros</option></select></div></div>
+          <div class="form-group"><label>Descripción *</label><textarea name="description" class="form-input" rows="3" required></textarea></div>
+          <div class="form-row"><div class="form-group"><label>Fecha</label><input type="date" name="date" class="form-input" /></div>
+          <div class="form-group file-input-wrap"><label class="file-label">📂 Imagen</label><input type="file" name="imageFile" accept="image/*" /></div></div>
+          <div class="form-group form-check"><input type="checkbox" id="isNewPost" name="isNewPost" class="form-checkbox" /><label for="isNewPost">🆕 Marcar como nuevo</label></div>
+          <button type="submit" class="btn btn-primary">📚 Agregar</button>
         </form>
       </div>
-      <div class="admin-table-card clay-card">
-        <h2 class="admin-form-title">Publicaciones (<%= lessons.length %>)</h2>
-        <% if (!lessons.length) { %><p class="admin-empty">No hay publicaciones aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% lessons.forEach(l => { %>
-              <div class="admin-item">
-                <span class="admin-emoji">📚</span>
-                <div class="admin-item-info">
-                  <strong><%= l.topic %></strong>
-                  <span class="tag"><%= l.category %></span>
-                  <% if(l.isNewPost){ %><span class="tag tag-new">🆕 Nuevo</span><% } %>
-                </div>
-                <form action="/admin/aprendemos/<%= l._id %>?_method=DELETE" method="POST">
-                  <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                </form>
-              </div>
-            <% }); %>
-          </div>
-        <% } %>
+      <div class="admin-table-card clay-card"><h2 class="admin-form-title">Publicaciones (<%= lessons.length %>)</h2>
+        <% if(!lessons.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%lessons.forEach(l=>{%>
+          <div class="admin-item"><span class="admin-emoji">📚</span><div class="admin-item-info"><strong><%= l.topic %></strong><span class="tag"><%= l.category %></span><% if(l.isNewPost){%><span class="tag tag-new">🆕</span><%}%></div>
+          <form action="/admin/aprendemos/<%= l._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+        <%});%></div><%}%>
       </div>
 
-    <!-- ══ TAREAS ════════════════════════════════════════ -->
+    <!-- ══════ TAREAS ═══════════════════════════ -->
     <% } else if (section === 'tareas') { %>
       <div class="admin-form-card clay-card">
         <h2 class="admin-form-title">➕ Agregar Tarea</h2>
         <form action="/admin/tareas" method="POST" class="admin-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Título *</label>
-              <input type="text" name="title" class="form-input" required placeholder="Ej: Ejercicio de tildes" />
-            </div>
-            <div class="form-group">
-              <label>Materia</label>
-              <input type="text" name="subject" class="form-input" value="Español" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Descripción *</label>
-            <textarea name="description" class="form-input" rows="3" required></textarea>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha de entrega *</label>
-              <input type="date" name="dueDate" class="form-input" required />
-            </div>
-            <div class="form-group">
-              <label>Estado</label>
-              <select name="status" class="form-input">
-                <option value="Pendiente">🟡 Pendiente</option>
-                <option value="En proceso">🔵 En proceso</option>
-                <option value="Completada">✅ Completada</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary">🗒️ Agregar Tarea</button>
+          <div class="form-row"><div class="form-group"><label>Título *</label><input type="text" name="title" class="form-input" required /></div><div class="form-group"><label>Materia</label><input type="text" name="subject" class="form-input" value="Español" /></div></div>
+          <div class="form-group"><label>Descripción *</label><textarea name="description" class="form-input" rows="3" required></textarea></div>
+          <div class="form-row"><div class="form-group"><label>Fecha de entrega *</label><input type="date" name="dueDate" class="form-input" required /></div>
+          <div class="form-group"><label>Estado</label><select name="status" class="form-input"><option value="Pendiente">🟡 Pendiente</option><option value="En proceso">🔵 En proceso</option><option value="Completada">✅ Completada</option></select></div></div>
+          <button type="submit" class="btn btn-primary">🗒️ Agregar</button>
         </form>
       </div>
-      <div class="admin-table-card clay-card">
-        <h2 class="admin-form-title">Tareas (<%= tasks.length %>)</h2>
-        <% if (!tasks.length) { %><p class="admin-empty">No hay tareas aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% tasks.forEach(t => { %>
-              <div class="admin-item">
-                <span class="admin-emoji">🗒️</span>
-                <div class="admin-item-info">
-                  <strong><%= t.title %></strong>
-                  <span class="tag"><%= t.subject %></span>
-                  <span class="tag"><%= t.status %></span>
-                  <small>Vence: <%= new Date(t.dueDate).toLocaleDateString('es-MX') %></small>
-                </div>
-                <div class="admin-item-actions">
-                  <form action="/admin/tareas/<%= t._id %>?_method=PUT" method="POST" style="display:inline-flex;gap:4px">
-                    <select name="status" class="form-input form-input-sm">
-                      <option value="Pendiente"  <%= t.status==='Pendiente'  ?'selected':'' %>>🟡 Pendiente</option>
-                      <option value="En proceso" <%= t.status==='En proceso' ?'selected':'' %>>🔵 En proceso</option>
-                      <option value="Completada" <%= t.status==='Completada' ?'selected':'' %>>✅ Completada</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-success">✓</button>
-                  </form>
-                  <form action="/admin/tareas/<%= t._id %>?_method=DELETE" method="POST">
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                  </form>
-                </div>
-              </div>
-            <% }); %>
-          </div>
-        <% } %>
+      <div class="admin-table-card clay-card"><h2 class="admin-form-title">Tareas (<%= tasks.length %>)</h2>
+        <% if(!tasks.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%tasks.forEach(t=>{%>
+          <div class="admin-item"><span class="admin-emoji">🗒️</span><div class="admin-item-info"><strong><%= t.title %></strong><span class="tag"><%= t.status %></span><small>Vence: <%= new Date(t.dueDate).toLocaleDateString('es-MX') %></small></div>
+          <div class="admin-item-actions">
+            <form action="/admin/tareas/<%= t._id %>?_method=PUT" method="POST" style="display:inline-flex;gap:4px"><select name="status" class="form-input form-input-sm"><option value="Pendiente" <%=t.status==='Pendiente'?'selected':''%>>🟡</option><option value="En proceso" <%=t.status==='En proceso'?'selected':''%>>🔵</option><option value="Completada" <%=t.status==='Completada'?'selected':''%>>✅</option></select><button type="submit" class="btn btn-sm btn-success">✓</button></form>
+            <form action="/admin/tareas/<%= t._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+          </div></div>
+        <%});%></div><%}%>
       </div>
 
-    <!-- ══ ESCRITOR ══════════════════════════════════════ -->
+    <!-- ══════ ESCRITOR ═════════════════════════ -->
     <% } else if (section === 'escritor') { %>
       <div class="admin-form-card clay-card">
         <h2 class="admin-form-title">➕ Agregar Producción Escrita</h2>
         <form action="/admin/escritor" method="POST" enctype="multipart/form-data" class="admin-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nombre del estudiante (primer nombre) *</label>
-              <input type="text" name="studentName" class="form-input" required placeholder="Ej: Sofía" />
-            </div>
-            <div class="form-group">
-              <label>Título de la producción *</label>
-              <input type="text" name="title" class="form-input" required placeholder="Ej: El gato mágico" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Texto *</label>
-            <textarea name="content" class="form-input" rows="6" required placeholder="Escribe el contenido aquí..."></textarea>
-          </div>
-          <div class="form-group file-input-wrap">
-            <label class="file-label">📂 Ilustración (opcional)</label>
-            <input type="file" name="imageFile" accept="image/*" onchange="previewImg(this,'escritorPreview')" />
-            <img id="escritorPreview" class="preview-thumb" style="display:none" />
-            <span class="file-hint">Foto o dibujo del estudiante. Máximo 10 MB.</span>
-          </div>
-          <button type="submit" class="btn btn-primary">✍️ Publicar Producción</button>
+          <div class="form-row"><div class="form-group"><label>Nombre del estudiante *</label><input type="text" name="studentName" class="form-input" required placeholder="Ej: Sofía" /></div>
+          <div class="form-group"><label>Título *</label><input type="text" name="title" class="form-input" required placeholder="Ej: El gato mágico" /></div></div>
+          <div class="form-group"><label>Texto *</label><textarea name="content" class="form-input" rows="6" required></textarea></div>
+          <div class="form-group file-input-wrap"><label class="file-label">📂 Ilustración (opcional)</label><input type="file" name="imageFile" accept="image/*" /><span class="file-hint">Se sube a Cloudinary. Máx 10 MB.</span></div>
+          <button type="submit" class="btn btn-primary">✍️ Publicar</button>
         </form>
       </div>
-      <div class="admin-table-card clay-card">
-        <h2 class="admin-form-title">Producciones (<%= works.length %>)</h2>
-        <% if (!works.length) { %><p class="admin-empty">No hay producciones aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% works.forEach(w => { %>
-              <div class="admin-item">
-                <span class="admin-emoji">✍️</span>
-                <div class="admin-item-info">
-                  <strong><%= w.title %></strong>
-                  <span class="tag"><%= w.studentName %></span>
-                  <small><%= w.likes %> ⭐</small>
-                </div>
-                <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST">
-                  <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                </form>
-              </div>
-            <% }); %>
-          </div>
-        <% } %>
+      <div class="admin-table-card clay-card"><h2 class="admin-form-title">Producciones (<%= works.length %>)</h2>
+        <% if(!works.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%works.forEach(w=>{%>
+          <div class="admin-item"><span class="admin-emoji">✍️</span><div class="admin-item-info"><strong><%= w.title %></strong><span class="tag"><%= w.studentName %></span><small><%= w.likes %> ⭐</small></div>
+          <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+        <%});%></div><%}%>
       </div>
 
-    <!-- ══ APRENDIZAJE ════════════════════════════════════ -->
+    <!-- ══════ APRENDIZAJE ══════════════════════ -->
     <% } else if (section === 'aprendizaje') { %>
       <div class="admin-form-card clay-card">
-        <h2 class="admin-form-title">➕ Agregar Recurso de Aprendizaje</h2>
+        <h2 class="admin-form-title">➕ Agregar Recurso</h2>
         <form action="/admin/aprendizaje" method="POST" class="admin-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Título *</label>
-              <input type="text" name="title" class="form-input" required placeholder="Ej: Regla del uso de B y V" />
-            </div>
-            <div class="form-group">
-              <label>Categoría</label>
-              <select name="category" class="form-input">
-                <option>Reglas</option><option>Trucos</option>
-                <option>Actividades</option><option>Desafíos</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Emoji</label>
-            <input type="text" name="emoji" class="form-input" value="📖" maxlength="4" style="max-width:100px" />
-          </div>
-          <div class="form-group">
-            <label>Contenido *</label>
-            <textarea name="content" class="form-input" rows="4" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">🌟 Agregar Recurso</button>
+          <div class="form-row"><div class="form-group"><label>Título *</label><input type="text" name="title" class="form-input" required /></div>
+          <div class="form-group"><label>Categoría</label><select name="category" class="form-input"><option>Reglas</option><option>Trucos</option><option>Actividades</option><option>Desafíos</option></select></div></div>
+          <div class="form-group"><label>Emoji</label><input type="text" name="emoji" class="form-input" value="📖" maxlength="4" style="max-width:100px" /></div>
+          <div class="form-group"><label>Contenido *</label><textarea name="content" class="form-input" rows="4" required></textarea></div>
+          <button type="submit" class="btn btn-primary">🌟 Agregar</button>
         </form>
       </div>
-      <div class="admin-table-card clay-card">
-        <h2 class="admin-form-title">Recursos (<%= learnings.length %>)</h2>
-        <% if (!learnings.length) { %><p class="admin-empty">No hay recursos aún.</p><% } else { %>
-          <div class="admin-cards-list">
-            <% learnings.forEach(l => { %>
-              <div class="admin-item">
-                <span class="admin-emoji"><%= l.emoji %></span>
-                <div class="admin-item-info">
-                  <strong><%= l.title %></strong>
-                  <span class="tag"><%= l.category %></span>
-                </div>
-                <form action="/admin/aprendizaje/<%= l._id %>?_method=DELETE" method="POST">
-                  <button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button>
-                </form>
-              </div>
-            <% }); %>
-          </div>
-        <% } %>
+      <div class="admin-table-card clay-card"><h2 class="admin-form-title">Recursos (<%= learnings.length %>)</h2>
+        <% if(!learnings.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%learnings.forEach(l=>{%>
+          <div class="admin-item"><span class="admin-emoji"><%= l.emoji %></span><div class="admin-item-info"><strong><%= l.title %></strong><span class="tag"><%= l.category %></span></div>
+          <form action="/admin/aprendizaje/<%= l._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+        <%});%></div><%}%>
       </div>
-
     <% } %>
   </main>
 </div>
-
 <script>
-function previewImg(input, previewId) {
-  const preview = document.getElementById(previewId);
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
+function previewMulti(input){
+  const row=document.getElementById('multiPreview');
+  row.innerHTML='';
+  if(!input.files)return;
+  [...input.files].slice(0,5).forEach(file=>{
+    const r=new FileReader();
+    r.onload=e=>{const img=document.createElement('img');img.src=e.target.result;img.className='preview-thumb';row.appendChild(img);};
+    r.readAsDataURL(file);
+  });
 }
 </script>
 </body>

@@ -2616,4 +2616,99 @@ textarea.form-input {
   .carousel-btn { display: none; }
 }
 
+/* ══════════════════════════════════════════════════
+   MINI CAROUSEL (inside polaroid cards)
+══════════════════════════════════════════════════ */
+.mini-carousel {
+  position: relative;
+  display: grid;
+  grid-template-areas: "s";
+  width: 100%;
+  min-height: 180px;
+}
 
+.mini-slide {
+  grid-area: s;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.mini-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mini-slide img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.mini-prev,
+.mini-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(60,30,100,0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.2s;
+}
+.mini-prev:hover, .mini-next:hover { background: rgba(60,30,100,0.8); }
+.mini-prev { left: 6px; }
+.mini-next { right: 6px; }
+
+.mini-counter {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  background: rgba(60,30,100,0.6);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  z-index: 3;
+}
+
+/* ── Empty placeholder for photos ─────────── */
+.photo-placeholder-empty {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ede5ff, #ddd0ff);
+  color: var(--lavender-dark);
+  font-size: 2.8rem;
+}
+
+.photo-placeholder-empty small {
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.65;
+  max-width: 140px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.polaroid-desc {
+  font-size: 0.8rem;
+  color: #7a5cb8;
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
