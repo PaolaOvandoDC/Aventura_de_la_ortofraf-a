@@ -4,7 +4,6 @@
 ═══════════════════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initCursorTrail();
   initSidebar();
   initFadeInSections();
   initCountUp();
@@ -13,74 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initGames();
 });
 
-/* ── CURSOR TRAIL ─────────────────────────────────── */
-function initCursorTrail() {
-  const canvas = document.getElementById('cursorTrail');
-  if (!canvas) return;
-
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const lowPower = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
-
-  if (reducedMotion || hasTouch || lowPower) return;
-
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return;
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.pointerEvents = 'none';
-
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
-
-  const particles = [];
-  const emojis = ['✨', '⭐', '🌟', '✦', '·'];
-  const maxParticles = 70;
-  let mouse = { x: -999, y: -999 };
-
-  window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-
-    if (particles.length >= maxParticles) {
-      particles.splice(0, particles.length - maxParticles + 1);
-    }
-
-    for (let i = 0; i < 1; i++) {
-      particles.push({
-        x: mouse.x + (Math.random() - 0.5) * 10,
-        y: mouse.y + (Math.random() - 0.5) * 10,
-        emoji: emojis[Math.floor(Math.random() * emojis.length)],
-        size: Math.random() * 12 + 8,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2 - 0.8,
-        life: 1
-      });
-    }
-  });
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life -= 0.03;
-      p.size *= 0.97;
-      ctx.globalAlpha = Math.max(0, p.life);
-      ctx.font = `${p.size}px serif`;
-      ctx.fillText(p.emoji, p.x, p.y);
-      if (p.life <= 0) particles.splice(i, 1);
-    }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(animate);
-  }
-  animate();
-}
-
+/* ── SIDEBAR TOGGLE (mobile) ─────────────────────── */
 /* ── SIDEBAR TOGGLE (mobile) ─────────────────────── */
 function initSidebar() {
   const btn = document.getElementById('hamburgerBtn');

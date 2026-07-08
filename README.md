@@ -144,4 +144,24 @@ npm start
 - Frontend: EJS + CSS + JavaScript.
 - Admin: panel para manejar contenido sin tocar código.
 
-Si quieres, en el siguiente paso puedo ayudarte a dejar el proyecto aún más ordenado con una estructura más profesional, por ejemplo separando mejor las secciones, añadiendo un archivo de configuración y dejando el panel de administración más claro.
+## 7. Cambios recientes (rápido)
+
+- Se quitó el efecto de "estrellitas" que seguía el cursor para reducir carga en el navegador. Archivos afectados: `public/js/main.js` y `views/layout.ejs`.
+- Se agregó edición inline para `Tareas` y se añadió un control `Editar` en el panel de administración (parcial). Archivo afectado: `views/admin/dashboard.ejs`.
+
+Estos cambios reducen el uso de CPU en el navegador y facilitan la edición desde el admin.
+
+## 8. Cómo subir cambios a GitHub (rápido)
+
+Desde la carpeta del proyecto ejecuta los siguientes comandos en PowerShell o terminal:
+
+```powershell
+cd "c:\Users\Asus\Downloads\aplicaciones\NADIA_OVANDO\Naye"
+git add README.md views/layout.ejs public/js/main.js views/admin/dashboard.ejs
+git commit -m "Docs: actualizar README con cambios recientes (cursor, admin edit)"
+git push origin main
+```
+
+Después de `git push`, si tu repo está conectado con Render, el servicio debería desplegarse automáticamente.
+
+
