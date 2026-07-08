@@ -20,6 +20,8 @@
     .msg-success{background:var(--green-light);color:#2b6b3a;padding:10px 18px;border-radius:var(--radius-pill);font-weight:700;font-size:.88rem;display:inline-block;margin-bottom:16px}
     .or-divider{display:flex;align-items:center;gap:12px;color:#a08cc8;font-size:.8rem;font-weight:700;margin:10px 0}
     .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:rgba(160,140,200,0.25)}
+    .admin-edit-toggle{padding:8px 10px;border:1px solid rgba(180,140,230,0.25);border-radius:999px;background:#f9f6ff;color:#5c3a9e;font-weight:700;cursor:pointer}
+    .admin-edit-form{display:none;margin-top:10px;padding:12px;border:1px solid rgba(180,140,230,0.2);border-radius:14px;background:#fcfaff}
   </style>
 </head>
 <body class="admin-body">
@@ -189,8 +191,24 @@
           <div class="admin-item"><span class="admin-emoji">🗒️</span><div class="admin-item-info"><strong><%= t.title %></strong><span class="tag"><%= t.status %></span><small>Vence: <%= new Date(t.dueDate).toLocaleDateString('es-MX') %></small></div>
           <div class="admin-item-actions">
             <form action="/admin/tareas/<%= t._id %>?_method=PUT" method="POST" style="display:inline-flex;gap:4px"><select name="status" class="form-input form-input-sm"><option value="Pendiente" <%=t.status==='Pendiente'?'selected':''%>>🟡</option><option value="En proceso" <%=t.status==='En proceso'?'selected':''%>>🔵</option><option value="Completada" <%=t.status==='Completada'?'selected':''%>>✅</option></select><button type="submit" class="btn btn-sm btn-success">✓</button></form>
+            <button type="button" class="admin-edit-toggle" onclick="toggleTaskEdit('<%= t._id %>')">✏️ Editar</button>
             <form action="/admin/tareas/<%= t._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
-          </div></div>
+          </div>
+          <div id="edit-task-<%= t._id %>" class="admin-edit-form">
+            <form action="/admin/tareas/<%= t._id %>?_method=PUT" method="POST" class="admin-form">
+              <div class="form-row">
+                <div class="form-group"><label>Título</label><input type="text" name="title" class="form-input" value="<%= t.title %>" required /></div>
+                <div class="form-group"><label>Materia</label><input type="text" name="subject" class="form-input" value="<%= t.subject %>" /></div>
+              </div>
+              <div class="form-group"><label>Descripción</label><textarea name="description" class="form-input" rows="3" required><%= t.description %></textarea></div>
+              <div class="form-row">
+                <div class="form-group"><label>Fecha de entrega</label><input type="date" name="dueDate" class="form-input" value="<%= new Date(t.dueDate).toISOString().split('T')[0] %>" required /></div>
+                <div class="form-group"><label>Estado</label><select name="status" class="form-input"><option value="Pendiente" <%=t.status==='Pendiente'?'selected':''%>>🟡 Pendiente</option><option value="En proceso" <%=t.status==='En proceso'?'selected':''%>>🔵 En proceso</option><option value="Completada" <%=t.status==='Completada'?'selected':''%>>✅ Completada</option></select></div>
+              </div>
+              <button type="submit" class="btn btn-primary">💾 Guardar cambios</button>
+            </form>
+          </div>
+        </div>
         <%});%></div><%}%>
       </div>
 
@@ -244,6 +262,12 @@ function previewMulti(input){
     r.onload=e=>{const img=document.createElement('img');img.src=e.target.result;img.className='preview-thumb';row.appendChild(img);};
     r.readAsDataURL(file);
   });
+}
+
+function toggleTaskEdit(taskId){
+  const form=document.getElementById(`edit-task-${taskId}`);
+  if(!form)return;
+  form.style.display = form.style.display === 'block' ? 'none' : 'block';
 }
 </script>
 </body>

@@ -16,6 +16,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+
 // MongoDB Connection — non-fatal, servidor sigue corriendo aunque falle la DB
 const connectDB = async () => {
   try {
@@ -49,7 +52,11 @@ app.set('layout', 'layout');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  etag: false,
+  lastModified: false
+}));
 
 // Session — fallback a memoria si no hay MongoDB todavía
 let sessionStore;
