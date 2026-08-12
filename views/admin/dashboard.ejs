@@ -122,15 +122,27 @@
         <h2 class="admin-form-title">Fotos existentes (<%= photos.length %>)</h2>
         <% if (!photos.length) { %><p class="admin-empty">No hay fotos aún.</p><% } else { %>
           <div class="admin-cards-list"><% photos.forEach(p => { %>
-            <div class="admin-item">
-              <% if (p.imageUrl) { %><img src="<%= p.imageUrl %>" class="admin-thumb" /><% } else { %><span class="admin-emoji">📸</span><% } %>
-              <div class="admin-item-info">
-                <strong><%= p.title %></strong>
-                <span class="tag"><%= p.category %></span>
-                <% const cnt = (p.allImages||[]).length; if(cnt>1){ %><span class="tag tag-new">🖼️ <%= cnt %> fotos</span><% } %>
+              <div class="admin-item">
+                <% if (p.imageUrl) { %><img src="<%= p.imageUrl %>" class="admin-thumb" /><% } else { %><span class="admin-emoji">📸</span><% } %>
+                <div class="admin-item-info">
+                  <strong><%= p.title %></strong>
+                  <span class="tag"><%= p.category %></span>
+                  <% const cnt = (p.allImages||[]).length; if(cnt>1){ %><span class="tag tag-new">🖼️ <%= cnt %> fotos</span><% } %>
+                </div>
+                <div class="admin-item-actions">
+                  <button type="button" class="admin-edit-toggle" onclick="toggleEdit('photo-<%= p._id %>')">✏️ Editar</button>
+                  <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+                </div>
+                <div id="edit-photo-<%= p._id %>" class="admin-edit-form">
+                  <form action="/admin/fotos/<%= p._id %>?_method=PUT" method="POST" class="admin-form">
+                    <div class="form-row"><div class="form-group"><label>Título</label><input type="text" name="title" class="form-input" value="<%= p.title %>" required /></div>
+                    <div class="form-group"><label>Categoría</label><input type="text" name="category" class="form-input" value="<%= p.category %>" /></div></div>
+                    <div class="form-group"><label>Descripción</label><input type="text" name="description" class="form-input" value="<%= p.description %>" /></div>
+                    <div class="form-group"><label>URL imagen principal</label><input type="url" name="imageUrl" class="form-input" value="<%= p.imageUrl %>" /></div>
+                    <button type="submit" class="btn btn-primary">💾 Guardar</button>
+                  </form>
+                </div>
               </div>
-              <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
-            </div>
           <% }); %></div>
         <% } %>
       </div>
@@ -149,7 +161,22 @@
       <div class="admin-table-card clay-card"><h2 class="admin-form-title">Juegos (<%= games.length %>)</h2>
         <% if(!games.length){%><p class="admin-empty">No hay juegos.</p><%}else{%><div class="admin-cards-list"><%games.forEach(g=>{%>
           <div class="admin-item"><span class="admin-emoji"><%= g.imageEmoji %></span><div class="admin-item-info"><strong><%= g.name %></strong></div>
-          <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+          <div class="admin-item-actions">
+            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('game-<%= g._id %>')">✏️ Editar</button>
+            <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+          </div>
+          <div id="edit-game-<%= g._id %>" class="admin-edit-form">
+            <form action="/admin/juegos/<%= g._id %>?_method=PUT" method="POST" class="admin-form">
+              <div class="form-row"><div class="form-group"><label>Nombre</label><input type="text" name="name" class="form-input" value="<%= g.name %>" required /></div>
+              <div class="form-group"><label>Emoji</label><input type="text" name="imageEmoji" class="form-input" value="<%= g.imageEmoji %>" maxlength="4" /></div></div>
+              <div class="form-group"><label>Descripción</label><input type="text" name="description" class="form-input" value="<%= g.description %>" required /></div>
+              <div class="form-row"><div class="form-group"><label>Dificultad</label><input type="number" name="difficulty" class="form-input" min="1" max="5" value="<%= g.difficulty %>" /></div>
+              <div class="form-group"><label>URL externa</label><input type="url" name="externalUrl" class="form-input" value="<%= g.externalUrl %>" /></div></div>
+              <div class="form-group"><label>Activo</label><input type="checkbox" name="active" <%= g.active ? 'checked' : '' %> /></div>
+              <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            </form>
+          </div>
+          </div>
         <%});%></div><%}%>
       </div>
 
@@ -170,7 +197,21 @@
       <div class="admin-table-card clay-card"><h2 class="admin-form-title">Publicaciones (<%= lessons.length %>)</h2>
         <% if(!lessons.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%lessons.forEach(l=>{%>
           <div class="admin-item"><span class="admin-emoji">📚</span><div class="admin-item-info"><strong><%= l.topic %></strong><span class="tag"><%= l.category %></span><% if(l.isNewPost){%><span class="tag tag-new">🆕</span><%}%></div>
-          <form action="/admin/aprendemos/<%= l._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+          <div class="admin-item-actions">
+            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('lesson-<%= l._id %>')">✏️ Editar</button>
+            <form action="/admin/aprendemos/<%= l._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+          </div>
+          <div id="edit-lesson-<%= l._id %>" class="admin-edit-form">
+            <form action="/admin/aprendemos/<%= l._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="admin-form">
+              <div class="form-row"><div class="form-group"><label>Tema</label><input type="text" name="topic" class="form-input" value="<%= l.topic %>" required /></div>
+              <div class="form-group"><label>Categoría</label><input type="text" name="category" class="form-input" value="<%= l.category %>" /></div></div>
+              <div class="form-group"><label>Descripción</label><textarea name="description" class="form-input" rows="3" required><%= l.description %></textarea></div>
+              <div class="form-group"><label>URL imagen</label><input type="url" name="imageUrl" class="form-input" value="<%= l.imageUrl %>" /></div>
+              <div class="form-group"><label>Marcar como nuevo</label><input type="checkbox" name="isNewPost" <%= l.isNewPost ? 'checked' : '' %> /></div>
+              <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            </form>
+          </div>
+          </div>
         <%});%></div><%}%>
       </div>
 
@@ -227,7 +268,20 @@
       <div class="admin-table-card clay-card"><h2 class="admin-form-title">Producciones (<%= works.length %>)</h2>
         <% if(!works.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%works.forEach(w=>{%>
           <div class="admin-item"><span class="admin-emoji">✍️</span><div class="admin-item-info"><strong><%= w.title %></strong><span class="tag"><%= w.studentName %></span><small><%= w.likes %> ⭐</small></div>
-          <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form></div>
+          <div class="admin-item-actions">
+            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('work-<%= w._id %>')">✏️ Editar</button>
+            <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
+          </div>
+          <div id="edit-work-<%= w._id %>" class="admin-edit-form">
+            <form action="/admin/escritor/<%= w._id %>?_method=PUT" method="POST" enctype="multipart/form-data" class="admin-form">
+              <div class="form-row"><div class="form-group"><label>Nombre estudiante</label><input type="text" name="studentName" class="form-input" value="<%= w.studentName %>" required /></div>
+              <div class="form-group"><label>Título</label><input type="text" name="title" class="form-input" value="<%= w.title %>" required /></div></div>
+              <div class="form-group"><label>Texto</label><textarea name="content" class="form-input" rows="4" required><%= w.content %></textarea></div>
+              <div class="form-group"><label>URL imagen</label><input type="url" name="imageUrl" class="form-input" value="<%= w.imageUrl %>" /></div>
+              <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            </form>
+          </div>
+          </div>
         <%});%></div><%}%>
       </div>
 
@@ -267,6 +321,11 @@ function previewMulti(input){
 function toggleTaskEdit(taskId){
   const form=document.getElementById(`edit-task-${taskId}`);
   if(!form)return;
+  form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+function toggleEdit(id){
+  const form=document.getElementById(`edit-${id}`) || document.getElementById(`edit-${id}`);
+  if(!form) return;
   form.style.display = form.style.display === 'block' ? 'none' : 'block';
 }
 </script>

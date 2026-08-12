@@ -11,7 +11,9 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const methodOverride = require('method-override');
 const ejsLayouts = require('express-ejs-layouts');
+const compression = require('compression');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,15 +50,49 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(ejsLayouts);
 app.set('layout', 'layout');
 
+// Gzip/deflate compression for responses (mejora tiempos de transferencia)
+app.use(compression());
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1d',
+  // Archivos estáticos cacheables en cliente — aumentar para recursos con hash
+  maxAge: '30d',
   etag: false,
-  lastModified: false
+  lastModified: false,
+  setHeaders: (res, filePath) => {
+    if (/\.(js|css|svg|png|jpe?g|webp|woff2?)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+    }
+  }
 }));
+
+// Pre-render a cached home HTML to serve quickly on cold starts
+try {
+  const cacheDir = path.join(__dirname, 'public', 'cache');
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+  const cachedHomePath = path.join(cacheDir, 'home_cached.html');
+  // Render with minimal data (no DB) so first visitors get fast response
+  app.render('home', {
+    title: 'Inicio | La Aventura de la Ortografía',
+    challenge: null,
+    stats: { photoCount: 0, gameCount: 0, workCount: 0 },
+    heroPhotoUrl: '',
+    pageAccent: 'lavender'
+  }, (err, html) => {
+    if (!err && html) {
+      fs.writeFileSync(cachedHomePath, html, 'utf8');
+      console.log('🗂️  Cached home page created');
+    } else {
+      console.error('⚠️  No se pudo crear cached home:', err && err.message);
+    }
+  });
+} catch (e) {
+  console.error('⚠️  Error creando cache inicial:', e.message);
+}
 
 // Session — fallback a memoria si no hay MongoDB todavía
 let sessionStore;

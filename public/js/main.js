@@ -376,56 +376,8 @@ document.addEventListener('keydown', e => {
 
 /* ── CONFETTI ─────────────────────────────────────── */
 function launchConfetti(modalId) {
-  const canvas = document.getElementById('confettiCanvas');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  const parent = canvas.parentElement;
-  canvas.width = parent.offsetWidth;
-  canvas.height = parent.offsetHeight;
-
-  const pieces = [];
-  const colors = ['#8b6ed4','#7ed8b4','#ff7f7f','#ffd166','#74c0fc','#69db7c'];
-
-  for (let i = 0; i < 80; i++) {
-    pieces.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height * -1,
-      w: Math.random() * 10 + 4,
-      h: Math.random() * 8 + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      vx: (Math.random() - 0.5) * 3,
-      vy: Math.random() * 4 + 2,
-      rot: Math.random() * 360,
-      rotV: (Math.random() - 0.5) * 8,
-      alpha: 1
-    });
-  }
-
-  let frame = 0;
-  function drawConfetti() {
-    if (frame > 90) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      return;
-    }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    pieces.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.rotV;
-      if (frame > 60) p.alpha = Math.max(0, p.alpha - 0.04);
-      ctx.save();
-      ctx.globalAlpha = p.alpha;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-      ctx.restore();
-    });
-    frame++;
-    requestAnimationFrame(drawConfetti);
-  }
-  drawConfetti();
+  // Disabled to improve performance on low-end devices.
+  return;
 }
 
 /* ── GAMES INITIALIZATION ────────────────────────── */

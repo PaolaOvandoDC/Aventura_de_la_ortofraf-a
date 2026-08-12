@@ -118,6 +118,13 @@ img {
   user-select: none;
 }
 
+/* PERFORMANCE: hide decorative sparkles/float stars to reduce CPU on low-end devices */
+.sparkles-container,
+.challenge-sparkles,
+.float-star {
+  display: none !important;
+}
+
 @keyframes floatUp {
   0% { transform: translateY(0) rotate(0deg); opacity: 0; }
   10% { opacity: 0.15; }

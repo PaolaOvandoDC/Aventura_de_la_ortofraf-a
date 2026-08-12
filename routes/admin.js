@@ -119,6 +119,18 @@ router.delete('/fotos/:id', isAdmin, async (req, res) => {
   res.redirect('/admin/fotos?msg=1');
 });
 
+// Edit/Update photo (basic fields)
+router.put('/fotos/:id', isAdmin, async (req, res) => {
+  const update = {
+    title: req.body.title,
+    category: req.body.category || 'Actividades',
+    description: req.body.description || '',
+    imageUrl: req.body.imageUrl || ''
+  };
+  await Photo.findByIdAndUpdate(req.params.id, update);
+  res.redirect('/admin/fotos?msg=1');
+});
+
 // ── GAMES CRUD ───────────────────────────────────
 router.get('/juegos', isAdmin, async (req, res) => {
   const games = await Game.find().sort({ createdAt: -1 });
@@ -133,6 +145,20 @@ router.post('/juegos', isAdmin, async (req, res) => {
 });
 router.delete('/juegos/:id', isAdmin, async (req, res) => {
   await Game.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/juegos?msg=1');
+});
+
+// Edit/Update game
+router.put('/juegos/:id', isAdmin, async (req, res) => {
+  const update = {
+    name: req.body.name,
+    description: req.body.description,
+    difficulty: req.body.difficulty || 3,
+    externalUrl: req.body.externalUrl || '',
+    imageEmoji: req.body.imageEmoji || '🎮',
+    active: req.body.active === 'on'
+  };
+  await Game.findByIdAndUpdate(req.params.id, update);
   res.redirect('/admin/juegos?msg=1');
 });
 
@@ -151,6 +177,20 @@ router.post('/aprendemos', isAdmin, upload.single('imageFile'), async (req, res)
 });
 router.delete('/aprendemos/:id', isAdmin, async (req, res) => {
   await LessonPost.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/aprendemos?msg=1');
+});
+
+// Edit/Update lesson post
+router.put('/aprendemos/:id', isAdmin, upload.single('imageFile'), async (req, res) => {
+  const imageUrl = req.file ? req.file.path : (req.body.imageUrl || '');
+  const update = {
+    topic: req.body.topic,
+    description: req.body.description,
+    category: req.body.category || 'Otros',
+    imageUrl,
+    isNewPost: req.body.isNewPost === 'on'
+  };
+  await LessonPost.findByIdAndUpdate(req.params.id, update);
   res.redirect('/admin/aprendemos?msg=1');
 });
 
@@ -193,6 +233,19 @@ router.delete('/escritor/:id', isAdmin, async (req, res) => {
   res.redirect('/admin/escritor?msg=1');
 });
 
+// Edit/Update student work
+router.put('/escritor/:id', isAdmin, upload.single('imageFile'), async (req, res) => {
+  const imageUrl = req.file ? req.file.path : (req.body.imageUrl || '');
+  const update = {
+    studentName: req.body.studentName,
+    title: req.body.title,
+    content: req.body.content,
+    imageUrl
+  };
+  await StudentWork.findByIdAndUpdate(req.params.id, update);
+  res.redirect('/admin/escritor?msg=1');
+});
+
 // ── LEARNING POSTS CRUD ──────────────────────────
 router.get('/aprendizaje', isAdmin, async (req, res) => {
   const learnings = await LearningPost.find().sort({ createdAt: -1 });
@@ -207,6 +260,19 @@ router.post('/aprendizaje', isAdmin, async (req, res) => {
 });
 router.delete('/aprendizaje/:id', isAdmin, async (req, res) => {
   await LearningPost.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/aprendizaje?msg=1');
+});
+
+// Edit/Update learning post
+router.put('/aprendizaje/:id', isAdmin, async (req, res) => {
+  const update = {
+    title: req.body.title,
+    content: req.body.content,
+    category: req.body.category || 'Reglas',
+    emoji: req.body.emoji || '📖',
+    featured: req.body.featured === 'on'
+  };
+  await LearningPost.findByIdAndUpdate(req.params.id, update);
   res.redirect('/admin/aprendizaje?msg=1');
 });
 
