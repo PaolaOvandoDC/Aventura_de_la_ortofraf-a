@@ -2180,6 +2180,18 @@ textarea.form-input {
   width: fit-content;
 }
 
+/* visible textual edit link as fallback */
+.admin-edit-link {
+  display: inline-block;
+  padding: 6px 10px;
+  background: var(--lavender-light);
+  color: #5c3a9e;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.admin-edit-link:hover { background: linear-gradient(135deg,#8b6ed4,#7c5cbf); color:#fff }
+
 .admin-empty {
   text-align: center;
   color: #a08cc8;

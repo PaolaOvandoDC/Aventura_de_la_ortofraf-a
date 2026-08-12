@@ -130,7 +130,8 @@
                   <% const cnt = (p.allImages||[]).length; if(cnt>1){ %><span class="tag tag-new">🖼️ <%= cnt %> fotos</span><% } %>
                 </div>
                 <div class="admin-item-actions">
-                  <button type="button" class="admin-edit-toggle" onclick="toggleEdit('photo-<%= p._id %>')">✏️ Editar</button>
+                  <button type="button" class="admin-edit-toggle" onclick="toggleEdit('photo-<%= p._id %>')">✏️</button>
+                  <a href="#" class="admin-edit-link" onclick="toggleEdit('photo-<%= p._id %>'); return false;">Editar</a>
                   <form action="/admin/fotos/<%= p._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
                 </div>
                 <div id="edit-photo-<%= p._id %>" class="admin-edit-form">
@@ -162,7 +163,8 @@
         <% if(!games.length){%><p class="admin-empty">No hay juegos.</p><%}else{%><div class="admin-cards-list"><%games.forEach(g=>{%>
           <div class="admin-item"><span class="admin-emoji"><%= g.imageEmoji %></span><div class="admin-item-info"><strong><%= g.name %></strong></div>
           <div class="admin-item-actions">
-            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('game-<%= g._id %>')">✏️ Editar</button>
+            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('game-<%= g._id %>')">✏️</button>
+            <a href="#" class="admin-edit-link" onclick="toggleEdit('game-<%= g._id %>'); return false;">Editar</a>
             <form action="/admin/juegos/<%= g._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
           </div>
           <div id="edit-game-<%= g._id %>" class="admin-edit-form">
@@ -269,7 +271,8 @@
         <% if(!works.length){%><p class="admin-empty">Vacío.</p><%}else{%><div class="admin-cards-list"><%works.forEach(w=>{%>
           <div class="admin-item"><span class="admin-emoji">✍️</span><div class="admin-item-info"><strong><%= w.title %></strong><span class="tag"><%= w.studentName %></span><small><%= w.likes %> ⭐</small></div>
           <div class="admin-item-actions">
-            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('work-<%= w._id %>')">✏️ Editar</button>
+            <button type="button" class="admin-edit-toggle" onclick="toggleEdit('work-<%= w._id %>')">✏️</button>
+            <a href="#" class="admin-edit-link" onclick="toggleEdit('work-<%= w._id %>'); return false;">Editar</a>
             <form action="/admin/escritor/<%= w._id %>?_method=DELETE" method="POST"><button type="submit" class="btn btn-danger" onclick="return confirm('¿Eliminar?')">🗑️</button></form>
           </div>
           <div id="edit-work-<%= w._id %>" class="admin-edit-form">
