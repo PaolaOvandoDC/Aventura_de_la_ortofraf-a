@@ -95,7 +95,8 @@ function initLightbox() {
   if (!lightbox) return;
 
   document.querySelectorAll('[data-lightbox]').forEach(card => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', event => {
+      if (event.target.closest('.mini-prev, .mini-next')) return;
       img.src = card.dataset.lightbox;
       img.alt = card.dataset.title || '';
       if (title) title.textContent = card.dataset.title || '';
