@@ -90,8 +90,8 @@
                     <div class="photo-placeholder-empty" style="display:none;"><span>📸</span></div>
                   </div>
                 <% }); %>
-                <button class="mini-prev" onclick="miniNav('<%= photo._id %>',-1)">‹</button>
-                <button class="mini-next" onclick="miniNav('<%= photo._id %>',1)">›</button>
+                <button type="button" class="mini-prev" onclick="event.stopPropagation(); miniNav('<%= photo._id %>',-1)">‹</button>
+                <button type="button" class="mini-next" onclick="event.stopPropagation(); miniNav('<%= photo._id %>',1)">›</button>
                 <div class="mini-counter"><span class="mini-cur">1</span>/<%= allImgs.length %></div>
               </div>
             <% } %>
