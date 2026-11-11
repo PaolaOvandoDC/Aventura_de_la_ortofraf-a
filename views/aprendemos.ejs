@@ -41,14 +41,16 @@
         <div class="lesson-card clay-card fade-in-card" style="animation-delay: <%= i * 0.1 %>s">
           <% if (post.imageUrl) { %>
             <div class="lesson-img-wrap">
-              <img src="<%= post.imageUrl %>" alt="<%= post.topic %>" loading="lazy" />
+              <img src="<%= post.imageUrl %>" alt="<%= post.topic %>" loading="lazy"
+                   data-lightbox="<%= post.imageUrl %>" data-title="<%= post.topic %>" />
             </div>
           <% } %>
           <div class="lesson-body">
             <span class="category-tag tag-sky"><%= post.category %></span>
             <h3 class="lesson-topic"><%= post.topic %></h3>
             <p class="lesson-date"><%= new Date(post.date).toLocaleDateString('es-MX', {day:'numeric', month:'long', year:'numeric'}) %></p>
-            <p class="lesson-desc"><%= post.description %></p>
+            <% const descriptionParts = post.description.split(/(https?:\/\/[^\s]+)/gi); %>
+            <p class="lesson-desc"><% descriptionParts.forEach(part => { if (/^https?:\/\//i.test(part)) { %><a class="lesson-link" href="<%= part %>" target="_blank" rel="noopener noreferrer"><%= part %></a><% } else { %><%= part %><% } }); %></p>
             <button 
               class="like-btn" 
               id="like-lesson-<%= post._id %>"
@@ -61,4 +63,12 @@
       <% }); %>
     </div>
   <% } %>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">✕</button>
+  <div class="lightbox-content">
+    <img src="" alt="" id="lightboxImg" />
+    <p id="lightboxTitle" class="lightbox-title"></p>
+  </div>
 </div>

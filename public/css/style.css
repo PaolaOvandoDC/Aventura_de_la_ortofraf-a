@@ -1386,6 +1386,7 @@ img {
 .lesson-img-wrap img {
   width: 100%; height: 100%;
   object-fit: cover;
+  cursor: zoom-in;
 }
 
 .lesson-body {
@@ -1411,8 +1412,16 @@ img {
   font-size: 0.9rem;
   color: #5c4a8a;
   line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
   flex: 1;
   margin-bottom: 16px;
+}
+
+.lesson-link {
+  color: #1864ab;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* Category Tags */
